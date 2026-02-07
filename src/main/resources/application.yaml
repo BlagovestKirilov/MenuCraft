@@ -1,0 +1,59 @@
+spring:
+  profiles:
+    active: dev
+
+  application:
+    name: MenuCraft
+
+  jackson:
+    time-zone: Europe/Sofia
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/menu_craft
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+  threads:
+    virtual:
+      enabled: true
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        dialect: ${DB_DIALECT}
+        jdbc:
+          time_zone: Europe/Sofia
+jwt:
+  secret-key: ${JWT_SECRET}
+  expiration: ${JWT_EXPIRATION}
+  refresh-expiration: ${JWT_REFRESH_EXPIRATION}
+# ============================================================
+# DEV PROFILE
+# ============================================================
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+  datasource:
+    hikari:
+      pool-name: MenuCraftPool
+      maximum-pool-size: 12
+      minimum-idle: 4
+      connection-timeout: 10000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      auto-commit: false
+      validation-timeout: 3000
+      leak-detection-threshold: 20000
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+logging:
+  level:
+    org.hibernate.SQL: INFO
+    org.hibernate.orm.jdbc.bind: WARN

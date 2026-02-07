@@ -1,0 +1,56 @@
+package bg.menucraft.service;
+
+import bg.menucraft.constant.Constants;
+import bg.menucraft.model.Account;
+import bg.menucraft.model.request.AccountRegistrationRequest;
+import bg.menucraft.model.request.LoginRequest;
+import bg.menucraft.model.response.AuthResponse;
+import bg.menucraft.repository.AccountRepository;
+import bg.menucraft.security.JwtService;
+import bg.menucraft.util.AccountMapper;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@RequiredArgsConstructor
+@Service
+public class AuthService {
+
+    private final AccountRepository accountRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final AccountMapper accountMapper;
+    private final JwtService jwtService;
+
+    @Transactional
+    public AuthResponse login(LoginRequest loginRequest, HttpServletRequest httpServletRequest) {
+
+        Account account = accountRepository.findByUsername(loginRequest.getUsername())
+                .filter(foundUser -> passwordEncoder.matches(loginRequest.getPassword(), foundUser.getPassword()))
+                .orElseThrow(() -> new RuntimeException(loginRequest.getUsername()));
+
+        account.setIpAddress(httpServletRequest.getHeader(Constants.X_REAL_IP));
+        accountRepository.save(account);
+
+        return AuthResponse.success(
+                account.getRole().toString(),
+                jwtService.generateToken(account),
+                jwtService.generateRefreshToken(account));
+    }
+
+    @Transactional
+    public AuthResponse register(AccountRegistrationRequest registrationRequest, HttpServletRequest httpServletRequest) {
+
+        if (accountRepository.existsByUsername(registrationRequest.getUsername())) {
+            throw new RuntimeException(registrationRequest.getUsername());
+        }
+
+        Account account = accountMapper.toEntity(registrationRequest);
+        account.setPassword(passwordEncoder.encode(registrationRequest.getPassword()));
+        account.setIpAddress(httpServletRequest.getHeader(Constants.X_REAL_IP));
+        accountRepository.save(account);
+
+        return AuthResponse.success();
+    }
+}
