@@ -1,5 +1,6 @@
 package bg.menucraft.controller;
 
+import bg.menucraft.model.request.MenuGenerationRequest;
 import bg.menucraft.model.request.VenueRegistrationRequest;
 import bg.menucraft.model.response.AuthResponse;
 import bg.menucraft.service.FileGenerationService;
@@ -27,9 +28,9 @@ public class VenueController {
         return ResponseEntity.ok(venueService.register(registrationRequest, httpServletRequest));
     }
 
-    @GetMapping("/pdf")
-    public ResponseEntity<byte[]> getMenuPdf() {
-        byte[] pdfBytes = fileGenerationService.fillPdf();
+    @GetMapping("/menu")
+    public ResponseEntity<byte[]> generateMenu(@Valid @RequestBody MenuGenerationRequest menuGenerationRequest) {
+        byte[] pdfBytes = fileGenerationService.generateMenu(menuGenerationRequest);
 
         return ResponseEntity.ok()
                 .header("Content-Disposition", "attachment; filename=menu-filled.pdf")

@@ -40,4 +40,17 @@ public class ValidationConstants {
 
     public static final int DESCRIPTION_MAX = 500;
     public static final String DESCRIPTION_SIZE = "Description can be at most {max} characters";
+
+    public static final String SALADS_REQUIRED = "Salads list is required";
+    public static final String SOUPS_REQUIRED = "Soups list is required";
+    public static final String MAIN_COURSES_REQUIRED = "Main courses list is required";
+    public static final String SALADS_SIZE = "Salads list size must be between {min} and {max}";
+    public static final String SOUPS_SIZE = "Soups list size must be between {min} and {max}";
+    public static final String MAIN_COURSES_SIZE = "Main courses list size must be between {min} and {max}";
+
+    public static final String MEAL_NAME_REQUIRED = "Meal name is required";
+    public static final String MEAL_NAME_SIZE = "Meal name must not exceed {max} characters";
+    public static final String MEAL_PRICE_REQUIRED = "Meal price is required";
+    public static final String MEAL_PRICE_MIN = "Meal price must be greater than 0";
+    public static final String MEAL_PRICE_FORMAT = "Meal price must have up to {integer} digits and {fraction} decimal places";
 }
