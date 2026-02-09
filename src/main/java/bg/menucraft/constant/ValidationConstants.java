@@ -15,6 +15,7 @@ public class ValidationConstants {
     public static final String USERNAME_EMPTY = "Username cannot be empty";
     public static final String USERNAME_SIZE = "Username must be between " + USERNAME_MIN + " and " + USERNAME_MAX + " characters";
     public static final String USERNAME_PATTERN = "Username can contain only letters and digits";
+    public static final String ACCOUNT_USERNAMES_REQUIRED = "At least one account username is required";
 
     public static final String PASSWORD_EMPTY = "Password cannot be empty";
     public static final String PASSWORD_SIZE = "Password must be between " + PASSWORD_MIN + " and " + PASSWORD_MAX + " characters";
@@ -53,4 +54,10 @@ public class ValidationConstants {
     public static final String MEAL_PRICE_REQUIRED = "Meal price is required";
     public static final String MEAL_PRICE_MIN = "Meal price must be greater than 0";
     public static final String MEAL_PRICE_FORMAT = "Meal price must have up to {integer} digits and {fraction} decimal places";
+
+    public static final String TEMPLATE_NAME_EMPTY = "Template name cannot be blank";
+    public static final int TEMPLATE_NAME_MIN = 2;
+    public static final int TEMPLATE_NAME_MAX = 100;
+    public static final String TEMPLATE_NAME_SIZE = "Template name must be between {min} and {max} characters";
+    public static final String TEMPLATE_FILE_REQUIRED = "Template file is required";
 }

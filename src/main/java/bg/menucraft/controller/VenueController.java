@@ -2,10 +2,9 @@ package bg.menucraft.controller;
 
 import bg.menucraft.model.request.MenuGenerationRequest;
 import bg.menucraft.model.request.VenueRegistrationRequest;
-import bg.menucraft.model.response.AuthResponse;
+import bg.menucraft.model.response.ApiResponse;
 import bg.menucraft.service.FileGenerationService;
 import bg.menucraft.service.VenueService;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -24,8 +23,8 @@ public class VenueController {
     private final FileGenerationService fileGenerationService;
 
     @PostMapping("/register")
-    public ResponseEntity<AuthResponse> register(@Valid @RequestBody VenueRegistrationRequest registrationRequest, HttpServletRequest httpServletRequest) {
-        return ResponseEntity.ok(venueService.register(registrationRequest, httpServletRequest));
+    public ResponseEntity<ApiResponse> register(@Valid @RequestBody VenueRegistrationRequest registrationRequest) {
+        return ResponseEntity.ok(venueService.register(registrationRequest));
     }
 
     @GetMapping("/menu")

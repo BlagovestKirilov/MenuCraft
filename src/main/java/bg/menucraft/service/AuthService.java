@@ -4,7 +4,7 @@ import bg.menucraft.constant.Constants;
 import bg.menucraft.model.Account;
 import bg.menucraft.model.request.AccountRegistrationRequest;
 import bg.menucraft.model.request.LoginRequest;
-import bg.menucraft.model.response.AuthResponse;
+import bg.menucraft.model.response.ApiResponse;
 import bg.menucraft.repository.AccountRepository;
 import bg.menucraft.security.JwtService;
 import bg.menucraft.util.AccountMapper;
@@ -24,7 +24,7 @@ public class AuthService {
     private final JwtService jwtService;
 
     @Transactional
-    public AuthResponse login(LoginRequest loginRequest, HttpServletRequest httpServletRequest) {
+    public ApiResponse login(LoginRequest loginRequest, HttpServletRequest httpServletRequest) {
 
         Account account = accountRepository.findByUsername(loginRequest.getUsername())
                 .filter(foundUser -> passwordEncoder.matches(loginRequest.getPassword(), foundUser.getPassword()))
@@ -33,14 +33,14 @@ public class AuthService {
         account.setIpAddress(httpServletRequest.getHeader(Constants.X_REAL_IP));
         accountRepository.save(account);
 
-        return AuthResponse.success(
+        return ApiResponse.success(
                 account.getRole().toString(),
                 jwtService.generateToken(account),
                 jwtService.generateRefreshToken(account));
     }
 
     @Transactional
-    public AuthResponse register(AccountRegistrationRequest registrationRequest, HttpServletRequest httpServletRequest) {
+    public ApiResponse register(AccountRegistrationRequest registrationRequest, HttpServletRequest httpServletRequest) {
 
         if (accountRepository.existsByUsername(registrationRequest.getUsername())) {
             throw new RuntimeException(registrationRequest.getUsername());
@@ -51,6 +51,6 @@ public class AuthService {
         account.setIpAddress(httpServletRequest.getHeader(Constants.X_REAL_IP));
         accountRepository.save(account);
 
-        return AuthResponse.success();
+        return ApiResponse.success();
     }
 }

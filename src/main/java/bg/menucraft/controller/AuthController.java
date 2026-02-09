@@ -2,7 +2,7 @@ package bg.menucraft.controller;
 
 import bg.menucraft.model.request.AccountRegistrationRequest;
 import bg.menucraft.model.request.LoginRequest;
-import bg.menucraft.model.response.AuthResponse;
+import bg.menucraft.model.response.ApiResponse;
 import bg.menucraft.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -21,12 +21,12 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest loginRequest, HttpServletRequest httpServletRequest) {
+    public ResponseEntity<ApiResponse> login(@Valid @RequestBody LoginRequest loginRequest, HttpServletRequest httpServletRequest) {
         return ResponseEntity.ok(authService.login(loginRequest, httpServletRequest));
     }
 
     @PostMapping("/register")
-    public ResponseEntity<AuthResponse> register(@Valid @RequestBody AccountRegistrationRequest registrationRequest, HttpServletRequest httpServletRequest) {
+    public ResponseEntity<ApiResponse> register(@Valid @RequestBody AccountRegistrationRequest registrationRequest, HttpServletRequest httpServletRequest) {
         return ResponseEntity.ok(authService.register(registrationRequest, httpServletRequest));
     }
 }

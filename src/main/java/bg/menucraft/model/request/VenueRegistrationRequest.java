@@ -3,11 +3,14 @@ package bg.menucraft.model.request;
 import bg.menucraft.constant.ValidationConstants;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -35,8 +38,6 @@ public class VenueRegistrationRequest {
     @Size(max = ValidationConstants.DESCRIPTION_MAX, message = ValidationConstants.DESCRIPTION_SIZE)
     private String description;
 
-    @NotBlank(message = ValidationConstants.USERNAME_EMPTY)
-    @Size(min = ValidationConstants.USERNAME_MIN, max = ValidationConstants.USERNAME_MAX, message = ValidationConstants.USERNAME_SIZE)
-    @Pattern(regexp = ValidationConstants.ALPHANUMERIC_PATTERN, message = ValidationConstants.USERNAME_PATTERN)
-    private String accountUsername;
+    @NotEmpty(message = ValidationConstants.ACCOUNT_USERNAMES_REQUIRED)
+    private List<String> accountUsernames = new ArrayList<>();
 }
