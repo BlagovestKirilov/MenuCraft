@@ -3,6 +3,7 @@ package bg.menucraft.model.request;
 import bg.menucraft.constant.ValidationConstants;
 import bg.menucraft.model.dto.MealDto;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -15,6 +16,9 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 public class MenuGenerationRequest {
+
+    @NotBlank(message = ValidationConstants.TEMPLATE_NAME_EMPTY)
+    private String templateName;
 
     @NotNull(message = ValidationConstants.SALADS_REQUIRED)
     @Size(min = 1, max = 20, message = ValidationConstants.SALADS_SIZE)

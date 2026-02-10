@@ -1,7 +1,10 @@
 package bg.menucraft.service;
 
+import bg.menucraft.model.Template;
 import bg.menucraft.model.dto.MealDto;
 import bg.menucraft.model.request.MenuGenerationRequest;
+import bg.menucraft.repository.TemplateRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSName;
@@ -16,25 +19,36 @@ import org.apache.pdfbox.pdmodel.interactive.form.PDTextField;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
+@RequiredArgsConstructor
 @Service
 public class FileGenerationService {
 
     private static final int FONT_SIZE = 14;
+    private final TemplateRepository templateRepository;
 
     @SneakyThrows
     public byte[] generateMenu(MenuGenerationRequest menuGenerationRequest) {
-        ClassPathResource pdfResource = new ClassPathResource("pdf/terasata.pdf");
+        // Load template from database by name
+        Template template = templateRepository.findByName(menuGenerationRequest.getTemplateName())
+                .orElseThrow(() -> new RuntimeException("Template not found: " + menuGenerationRequest.getTemplateName()));
+
+        byte[] templateData = template.getData();
+        if (templateData == null || templateData.length == 0) {
+            throw new IllegalStateException("Template has no data: " + menuGenerationRequest.getTemplateName());
+        }
+
         ClassPathResource fontResource = new ClassPathResource("fonts/arialbd.ttf");
         if (!fontResource.exists()) {
             fontResource = new ClassPathResource("fonts/arial.ttf");
         }
 
-        try (InputStream pdfIs = pdfResource.getInputStream();
+        try (InputStream pdfIs = new ByteArrayInputStream(templateData);
              PDDocument document = Loader.loadPDF(new RandomAccessReadBuffer(pdfIs));
              InputStream fontIs = fontResource.getInputStream();
              ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
