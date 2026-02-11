@@ -3,17 +3,17 @@ package bg.menucraft.service;
 import bg.menucraft.model.Template;
 import bg.menucraft.model.TemplateSection;
 import bg.menucraft.model.Venue;
-import bg.menucraft.model.dto.TemplateSectionDto;
-import bg.menucraft.model.request.TemplateAddRequest;
+import bg.menucraft.model.dto.TemplateDto;
+import bg.menucraft.model.request.AddTemplateRequest;
 import bg.menucraft.model.response.ApiResponse;
 import bg.menucraft.repository.TemplateRepository;
 import bg.menucraft.repository.VenueRepository;
 import bg.menucraft.util.TemplateMapper;
+import bg.menucraft.util.TemplateSectionMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
@@ -27,25 +27,25 @@ public class TemplateService {
     private final TemplateRepository templateRepository;
     private final VenueRepository venueRepository;
     private final TemplateMapper templateMapper;
+    private final TemplateSectionMapper templateSectionMapper;
 
     @Transactional
-    public ApiResponse addTemplate(TemplateAddRequest request) {
+    public ApiResponse addTemplate(AddTemplateRequest request) {
         Template template = templateMapper.toEntity(request);
-        template.setData(Base64.getDecoder().decode(request.getFileBase64()));
+        template.setData(Base64.getDecoder().decode(request.getData()));
         template.setContentType(request.getContentType() != null && !request.getContentType().isBlank()
                 ? request.getContentType().trim()
                 : DEFAULT_CONTENT_TYPE);
 
         // Create and add sections
         if (request.getSections() != null && !request.getSections().isEmpty()) {
-            List<TemplateSection> sections = new ArrayList<>();
-            for (TemplateSectionDto sectionDto : request.getSections()) {
-                TemplateSection section = new TemplateSection();
-                section.setType(sectionDto.getType());
-                section.setSlotCount(sectionDto.getSlotCount());
-                section.setTemplate(template);
-                sections.add(section);
-            }
+            List<TemplateSection> sections = request.getSections().stream()
+                    .map(sectionDto -> {
+                        TemplateSection section = templateSectionMapper.toEntity(sectionDto);
+                        section.setTemplate(template);
+                        return section;
+                    })
+                    .toList();
             template.setSections(sections);
         }
 
@@ -63,6 +63,15 @@ public class TemplateService {
         }
 
         return ApiResponse.success();
+    }
+
+    public List<TemplateDto> getTemplates(String venueName) {
+        Venue venue = venueRepository.findByName(venueName)
+                .orElseThrow(() -> new RuntimeException("Venue not found: " + venueName));
+
+        return venue.getTemplates().stream()
+                .map(templateMapper::toDto)
+                .toList();
     }
 
     @Transactional(readOnly = true)

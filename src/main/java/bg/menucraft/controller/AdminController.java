@@ -1,7 +1,7 @@
 package bg.menucraft.controller;
 
 import bg.menucraft.model.Template;
-import bg.menucraft.model.request.TemplateAddRequest;
+import bg.menucraft.model.request.AddTemplateRequest;
 import bg.menucraft.model.response.ApiResponse;
 import bg.menucraft.service.TemplateService;
 import jakarta.validation.Valid;
@@ -25,7 +25,7 @@ public class AdminController {
     private final TemplateService templateService;
 
     @PostMapping("/template")
-    public ResponseEntity<ApiResponse> addTemplate(@Valid @RequestBody TemplateAddRequest request) {
+    public ResponseEntity<ApiResponse> addTemplate(@Valid @RequestBody AddTemplateRequest request) {
         return ResponseEntity.ok(templateService.addTemplate(request));
     }
 

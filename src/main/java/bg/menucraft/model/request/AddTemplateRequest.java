@@ -4,18 +4,18 @@ import bg.menucraft.constant.ValidationConstants;
 import bg.menucraft.model.dto.TemplateSectionDto;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 @Setter
 @NoArgsConstructor
-public class TemplateAddRequest {
+public class AddTemplateRequest {
 
     @NotBlank(message = ValidationConstants.TEMPLATE_NAME_EMPTY)
     @Size(min = ValidationConstants.TEMPLATE_NAME_MIN, max = ValidationConstants.TEMPLATE_NAME_MAX, message = ValidationConstants.TEMPLATE_NAME_SIZE)
@@ -28,7 +28,7 @@ public class TemplateAddRequest {
      * Base64-encoded file content (e.g. PDF).
      */
     @NotBlank(message = ValidationConstants.TEMPLATE_FILE_REQUIRED)
-    private String fileBase64;
+    private String data;
 
     /**
      * Optional; e.g. "application/pdf". Defaults to application/pdf if not set.
@@ -37,7 +37,9 @@ public class TemplateAddRequest {
     private String contentType;
 
     @Valid
-    private List<TemplateSectionDto> sections = new ArrayList<>();
+    @NotNull
+    private List<TemplateSectionDto> sections;
 
-    private List<String> venueNames = new ArrayList<>();
+    @NotNull
+    private List<String> venueNames;
 }
