@@ -10,6 +10,7 @@ import bg.menucraft.service.FacebookPostingService;
 import bg.menucraft.util.FacebookConnectionMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,6 +20,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.net.URI;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.UUID;
 
@@ -59,18 +63,35 @@ public class FacebookController {
     /**
      * OAuth callback endpoint. Facebook redirects here after the user grants permissions.
      * Exchanges the code for tokens, fetches Pages, and stores encrypted tokens.
+     * After processing, redirects the browser to the frontend callback page.
      *
      * @param code  the authorization code from Facebook
      * @param state the CSRF state parameter
-     * @return the list of connected Pages
+     * @return a 302 redirect to the frontend
      */
     @GetMapping("/oauth/callback")
-    public ResponseEntity<FacebookOAuthResponse> oauthCallback(
+    public ResponseEntity<Void> oauthCallback(
             @RequestParam String code,
             @RequestParam String state) {
 
         FacebookOAuthResponse response = facebookOAuthService.handleCallback(code, state);
-        return ResponseEntity.ok(response);
+
+        String frontendBase = "http://localhost:5173/facebook/oauth/callback";
+        String redirect = frontendBase
+                + "?status=" + encode(response.status())
+                + "&pages=" + encode(String.valueOf(response.pages() != null ? response.pages().size() : 0));
+
+        if (response.message() != null) {
+            redirect += "&message=" + encode(response.message());
+        }
+
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .location(URI.create(redirect))
+                .build();
+    }
+
+    private String encode(String value) {
+        return URLEncoder.encode(value, StandardCharsets.UTF_8);
     }
 
     // ───────────────────── Connection Management ─────────────────────

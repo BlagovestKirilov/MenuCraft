@@ -33,7 +33,7 @@ public class VenueController {
         return ResponseEntity.ok(venueService.register(registrationRequest));
     }
 
-    @GetMapping("/menu")
+    @PostMapping("/menu")
     public ResponseEntity<byte[]> generateMenu(@Valid @RequestBody MenuGenerationRequest menuGenerationRequest) {
         byte[] pdfBytes = fileGenerationService.generateMenu(menuGenerationRequest);
 

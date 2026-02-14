@@ -87,6 +87,7 @@ public class FacebookPostingService {
 
         Map<String, Object> response = restClient.post()
                 .uri(url)
+                .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .body(form)
                 .retrieve()
@@ -113,6 +114,7 @@ public class FacebookPostingService {
 
         Map<String, Object> response = restClient.post()
                 .uri(url)
+                .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .body(form)
                 .retrieve()

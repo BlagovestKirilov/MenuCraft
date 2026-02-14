@@ -11,10 +11,12 @@ import bg.menucraft.repository.VenueRepository;
 import bg.menucraft.security.TokenEncryptionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClient;
 
+import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
@@ -120,7 +122,8 @@ public class FacebookOAuthService {
                 + "&code=" + encode(code);
 
         Map<String, Object> response = restClient.get()
-                .uri(url)
+                .uri(URI.create(url))
+                .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
                 .body(Map.class);
 
@@ -142,7 +145,8 @@ public class FacebookOAuthService {
                 + "&fb_exchange_token=" + encode(shortLivedToken);
 
         Map<String, Object> response = restClient.get()
-                .uri(url)
+                .uri(URI.create(url))
+                .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
                 .body(Map.class);
 
@@ -164,7 +168,8 @@ public class FacebookOAuthService {
                 + "?access_token=" + encode(longLivedUserToken);
 
         Map<String, Object> response = restClient.get()
-                .uri(url)
+                .uri(URI.create(url))
+                .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
                 .body(Map.class);
 
