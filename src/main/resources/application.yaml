@@ -29,6 +29,15 @@ jwt:
   secret-key: ${JWT_SECRET}
   expiration: ${JWT_EXPIRATION}
   refresh-expiration: ${JWT_REFRESH_EXPIRATION}
+
+facebook:
+  app-id: ${FACEBOOK_APP_ID}
+  app-secret: ${FACEBOOK_APP_SECRET}
+  redirect-uri: ${FACEBOOK_REDIRECT_URI}
+  graph-api-base: https://graph.facebook.com/v21.0
+
+encryption:
+  aes-secret: ${AES_ENCRYPTION_SECRET}
 # ============================================================
 # DEV PROFILE
 # ============================================================

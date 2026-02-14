@@ -24,6 +24,8 @@ public class SecurityConfig {
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/admin/**").permitAll()
                         .requestMatchers("/venue/**").permitAll()
+                        .requestMatchers("/facebook/oauth/**").permitAll()
+                        .requestMatchers("/facebook/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
