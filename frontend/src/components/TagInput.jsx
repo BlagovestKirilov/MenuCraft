@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 /**
  * A tag/chip input for entering multiple string values (e.g. usernames, venue names).
@@ -8,8 +9,9 @@ import { useState } from 'react';
  * @param {string} placeholder
  * @param {string} label
  */
-export default function TagInput({ tags = [], onChange, placeholder = 'Type and press Enter', label }) {
+export default function TagInput({ tags = [], onChange, placeholder, label }) {
   const [input, setInput] = useState('');
+  const { t } = useTranslation();
 
   const addTag = () => {
     const val = input.trim();
@@ -42,14 +44,14 @@ export default function TagInput({ tags = [], onChange, placeholder = 'Type and 
           placeholder={placeholder}
         />
         <button type="button" className="btn btn-secondary btn-sm" onClick={addTag}>
-          Add
+          {t('common.add')}
         </button>
       </div>
       {tags.length > 0 && (
         <div className="tag-list">
-          {tags.map((t, i) => (
+          {tags.map((tag, i) => (
             <span key={i} className="tag">
-              {t}
+              {tag}
               <button type="button" onClick={() => removeTag(i)}>&times;</button>
             </span>
           ))}

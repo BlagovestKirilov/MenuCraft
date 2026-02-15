@@ -1,56 +1,58 @@
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import useAuth from '../hooks/useAuth';
 
-const CARDS = [
-  {
-    title: 'Register Venue',
-    description: 'Create a new venue and link it to accounts.',
-    link: '/venue/register',
-    icon: '🏪',
-  },
-  {
-    title: 'View Templates',
-    description: 'Browse templates assigned to your venues.',
-    link: '/venue/templates',
-    icon: '📄',
-  },
-  {
-    title: 'Generate Menu',
-    description: 'Create a PDF menu from a template and meals.',
-    link: '/menu/generate',
-    icon: '🍽️',
-  },
-  {
-    title: 'Facebook Integration',
-    description: 'Connect pages and post to Facebook.',
-    link: '/facebook',
-    icon: '📘',
-  },
-];
-
-const ADMIN_CARDS = [
-  {
-    title: 'Add Template',
-    description: 'Upload a new PDF template with sections.',
-    link: '/admin/template',
-    icon: '⬆️',
-  },
-  {
-    title: 'Browse Templates',
-    description: 'View and download uploaded templates.',
-    link: '/admin/templates',
-    icon: '📋',
-  },
-];
-
 export default function DashboardPage() {
-  const { isAdmin, role } = useAuth();
+  const { isAdmin } = useAuth();
+  const { t } = useTranslation();
+
+  const CARDS = [
+    {
+      titleKey: 'dashboard.cards.venues.title',
+      descKey: 'dashboard.cards.venues.description',
+      link: '/venues',
+      icon: '🏪',
+    },
+    {
+      titleKey: 'dashboard.cards.templates.title',
+      descKey: 'dashboard.cards.templates.description',
+      link: '/venue/templates',
+      icon: '📄',
+    },
+    {
+      titleKey: 'dashboard.cards.menu.title',
+      descKey: 'dashboard.cards.menu.description',
+      link: '/menu/generate',
+      icon: '🍽️',
+    },
+    {
+      titleKey: 'dashboard.cards.facebook.title',
+      descKey: 'dashboard.cards.facebook.description',
+      link: '/facebook',
+      icon: '📘',
+    },
+  ];
+
+  const ADMIN_CARDS = [
+    {
+      titleKey: 'dashboard.adminCards.addTemplate.title',
+      descKey: 'dashboard.adminCards.addTemplate.description',
+      link: '/admin/template',
+      icon: '⬆️',
+    },
+    {
+      titleKey: 'dashboard.adminCards.browseTemplates.title',
+      descKey: 'dashboard.adminCards.browseTemplates.description',
+      link: '/admin/templates',
+      icon: '📋',
+    },
+  ];
 
   return (
     <div className="page-container">
       <div className="page-header">
-        <h1>Dashboard</h1>
-        <p>Welcome to MenuCraft. Choose an action below.</p>
+        <h1>{t('dashboard.title')}</h1>
+        <p>{t('dashboard.subtitle')}</p>
       </div>
 
       <div className="grid-2">
@@ -58,9 +60,9 @@ export default function DashboardPage() {
           <Link key={c.link} to={c.link} style={{ textDecoration: 'none' }}>
             <div className="card card-compact" style={{ cursor: 'pointer', transition: 'var(--transition)' }}>
               <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>{c.icon}</div>
-              <h3 style={{ marginBottom: '0.25rem' }}>{c.title}</h3>
+              <h3 style={{ marginBottom: '0.25rem' }}>{t(c.titleKey)}</h3>
               <p className="text-secondary" style={{ fontSize: '0.875rem' }}>
-                {c.description}
+                {t(c.descKey)}
               </p>
             </div>
           </Link>
@@ -78,9 +80,9 @@ export default function DashboardPage() {
                 }}
               >
                 <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>{c.icon}</div>
-                <h3 style={{ marginBottom: '0.25rem' }}>{c.title}</h3>
+                <h3 style={{ marginBottom: '0.25rem' }}>{t(c.titleKey)}</h3>
                 <p className="text-secondary" style={{ fontSize: '0.875rem' }}>
-                  {c.description}
+                  {t(c.descKey)}
                 </p>
               </div>
             </Link>

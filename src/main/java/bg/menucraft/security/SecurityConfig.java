@@ -1,5 +1,6 @@
 package bg.menucraft.security;
 
+import bg.menucraft.enums.RoleEnum;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -41,8 +42,8 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/admin/**").permitAll()
-                        .requestMatchers("/venue/**").permitAll()
+                        .requestMatchers("/admin/**").hasRole(RoleEnum.ADMIN.toString())
+                        .requestMatchers("/venue/**").hasAnyRole(RoleEnum.ADMIN.toString(), RoleEnum.COMPANY.toString())
                         .requestMatchers("/facebook/oauth/**").permitAll()
                         .requestMatchers("/facebook/**").authenticated()
                         .anyRequest().authenticated()

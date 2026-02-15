@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import FormField from '../components/FormField';
 import ErrorAlert from '../components/ErrorAlert';
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -7,6 +8,8 @@ import { getOAuthLoginUrl, getConnections } from '../api/facebookApi';
 import { getErrorMessage } from '../utils/helpers';
 
 export default function FacebookPage() {
+  const { t } = useTranslation();
+
   // ── Connect Section ──
   const [venueIdConnect, setVenueIdConnect] = useState('');
   const [connectLoading, setConnectLoading] = useState(false);
@@ -53,33 +56,33 @@ export default function FacebookPage() {
   return (
     <div className="page-container">
       <div className="page-header">
-        <h1>Facebook Integration</h1>
-        <p>Connect your Facebook Pages and post content.</p>
+        <h1>{t('facebook.title')}</h1>
+        <p>{t('facebook.subtitle')}</p>
       </div>
 
       <div className="grid-2">
         {/* Connect Facebook */}
         <div className="card">
-          <h3 style={{ marginBottom: '1rem' }}>Connect Facebook Page</h3>
+          <h3 style={{ marginBottom: '1rem' }}>{t('facebook.connectTitle')}</h3>
           <ErrorAlert message={connectError} onClose={() => setConnectError('')} />
           <form onSubmit={handleConnect}>
             <FormField
-              label="Venue ID"
+              label={t('facebook.venueId')}
               name="venueIdConnect"
               value={venueIdConnect}
               onChange={(_, v) => setVenueIdConnect(v)}
-              placeholder="Enter venue UUID"
+              placeholder={t('facebook.venueIdPlaceholder')}
               required
             />
             <button type="submit" className="btn btn-primary btn-block" disabled={connectLoading}>
-              {connectLoading ? 'Redirecting...' : 'Connect Facebook'}
+              {connectLoading ? t('facebook.connecting') : t('facebook.connectButton')}
             </button>
           </form>
         </div>
 
         {/* List Connections */}
         <div className="card">
-          <h3 style={{ marginBottom: '1rem' }}>View Connections</h3>
+          <h3 style={{ marginBottom: '1rem' }}>{t('facebook.connectionsTitle')}</h3>
           <ErrorAlert message={listError} onClose={() => setListError('')} />
           <form onSubmit={handleLoadConnections} className="flex gap-1 items-center mb-2">
             <div style={{ flex: 1 }}>
@@ -87,18 +90,18 @@ export default function FacebookPage() {
                 name="venueIdList"
                 value={venueIdList}
                 onChange={(_, v) => setVenueIdList(v)}
-                placeholder="Enter venue UUID"
+                placeholder={t('facebook.venueIdPlaceholder')}
               />
             </div>
             <button type="submit" className="btn btn-primary" disabled={listLoading}>
-              Load
+              {t('facebook.loadButton')}
             </button>
           </form>
 
           {listLoading && <LoadingSpinner />}
 
           {!listLoading && searched && connections.length === 0 && !listError && (
-            <p className="text-secondary text-center">No connections found.</p>
+            <p className="text-secondary text-center">{t('facebook.noConnections')}</p>
           )}
 
           {connections.length > 0 && (
@@ -106,9 +109,9 @@ export default function FacebookPage() {
               <table>
                 <thead>
                   <tr>
-                    <th>Page</th>
-                    <th>Status</th>
-                    <th>Action</th>
+                    <th>{t('facebook.page')}</th>
+                    <th>{t('facebook.status')}</th>
+                    <th>{t('facebook.action')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -128,7 +131,7 @@ export default function FacebookPage() {
                       <td>
                         {c.status === 'CONNECTED' && (
                           <Link to={`/facebook/post/${c.id}`} className="btn btn-primary btn-sm">
-                            Post
+                            {t('facebook.postButton')}
                           </Link>
                         )}
                       </td>

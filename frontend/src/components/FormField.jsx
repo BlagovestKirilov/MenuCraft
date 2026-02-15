@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+
 /**
  * Reusable form field with label, input, and error display.
  *
@@ -25,6 +27,7 @@ export default function FormField({
   required = false,
   ...rest
 }) {
+  const { t } = useTranslation();
   const id = `field-${name}`;
 
   const handleChange = (e) => {
@@ -35,7 +38,7 @@ export default function FormField({
   if (type === 'select') {
     input = (
       <select id={id} className="form-control" value={value} onChange={handleChange} required={required} {...rest}>
-        <option value="">-- Select --</option>
+        <option value="">{t('common.select')}</option>
         {options?.map((opt) => (
           <option key={opt.value} value={opt.value}>
             {opt.label}

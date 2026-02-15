@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import FormField from '../components/FormField';
 import FileUpload from '../components/FileUpload';
 import TagInput from '../components/TagInput';
@@ -7,14 +8,16 @@ import SuccessAlert from '../components/SuccessAlert';
 import { addTemplate } from '../api/adminApi';
 import { getErrorMessage, fileToBase64 } from '../utils/helpers';
 
-const SECTION_TYPES = [
-  { value: 'SOUP', label: 'Soup' },
-  { value: 'SALAD', label: 'Salad' },
-  { value: 'MAIN_COURSE', label: 'Main Course' },
-  { value: 'DESSERT', label: 'Dessert' },
-];
-
 export default function AdminTemplatePage() {
+  const { t } = useTranslation();
+
+  const SECTION_TYPES = [
+    { value: 'SOUP', label: t('adminTemplate.sectionSoup') },
+    { value: 'SALAD', label: t('adminTemplate.sectionSalad') },
+    { value: 'MAIN_COURSE', label: t('adminTemplate.sectionMainCourse') },
+    { value: 'DESSERT', label: t('adminTemplate.sectionDessert') },
+  ];
+
   const [form, setForm] = useState({ name: '', description: '', contentType: 'application/pdf' });
   const [fileBase64, setFileBase64] = useState('');
   const [sections, setSections] = useState([{ type: 'SALAD', slotCount: '' }]);
@@ -43,7 +46,7 @@ export default function AdminTemplatePage() {
     setError('');
     setSuccess('');
     if (!fileBase64) {
-      setError('Please upload a template file.');
+      setError(t('adminTemplate.fileRequired'));
       return;
     }
     setLoading(true);
@@ -58,7 +61,7 @@ export default function AdminTemplatePage() {
         venueNames,
       };
       await addTemplate(payload);
-      setSuccess('Template added successfully!');
+      setSuccess(t('adminTemplate.success'));
       setForm({ name: '', description: '', contentType: 'application/pdf' });
       setFileBase64('');
       setSections([{ type: 'SALAD', slotCount: '' }]);
@@ -73,8 +76,8 @@ export default function AdminTemplatePage() {
   return (
     <div className="page-container">
       <div className="page-header">
-        <h1>Add Template</h1>
-        <p>Upload a PDF template with sections and assign to venues.</p>
+        <h1>{t('adminTemplate.title')}</h1>
+        <p>{t('adminTemplate.subtitle')}</p>
       </div>
 
       <div className="card" style={{ maxWidth: 680 }}>
@@ -83,40 +86,40 @@ export default function AdminTemplatePage() {
 
         <form onSubmit={handleSubmit}>
           <FormField
-            label="Template Name"
+            label={t('adminTemplate.name')}
             name="name"
             value={form.name}
             onChange={handleChange}
-            placeholder="2-100 characters"
+            placeholder={t('adminTemplate.namePlaceholder')}
             required
           />
           <FormField
-            label="Description"
+            label={t('adminTemplate.description')}
             name="description"
             type="textarea"
             value={form.description}
             onChange={handleChange}
-            placeholder="Optional, max 500 chars"
+            placeholder={t('adminTemplate.descriptionPlaceholder')}
           />
           <FormField
-            label="Content Type"
+            label={t('adminTemplate.contentType')}
             name="contentType"
             value={form.contentType}
             onChange={handleChange}
-            placeholder="application/pdf"
+            placeholder={t('adminTemplate.contentTypePlaceholder')}
           />
 
           <div className="form-group">
-            <label>Template File (PDF) *</label>
-            <FileUpload onFileSelect={handleFileSelect} accept=".pdf" label="Drop a PDF file or click to browse" />
+            <label>{t('adminTemplate.fileLabel')}</label>
+            <FileUpload onFileSelect={handleFileSelect} accept=".pdf" label={t('adminTemplate.fileDrop')} />
           </div>
 
           {/* Sections */}
           <div className="form-group">
             <div className="meal-list-header">
-              <label>Template Sections</label>
+              <label>{t('adminTemplate.sections')}</label>
               <button type="button" className="btn btn-secondary btn-sm" onClick={addSection}>
-                + Add Section
+                {t('adminTemplate.addSection')}
               </button>
             </div>
             {sections.map((s, i) => (
@@ -126,9 +129,9 @@ export default function AdminTemplatePage() {
                   value={s.type}
                   onChange={(e) => updateSection(i, 'type', e.target.value)}
                 >
-                  {SECTION_TYPES.map((t) => (
-                    <option key={t.value} value={t.value}>
-                      {t.label}
+                  {SECTION_TYPES.map((tp) => (
+                    <option key={tp.value} value={tp.value}>
+                      {tp.label}
                     </option>
                   ))}
                 </select>
@@ -136,7 +139,7 @@ export default function AdminTemplatePage() {
                   className="form-control"
                   type="number"
                   min="1"
-                  placeholder="Slots"
+                  placeholder={t('adminTemplate.slotsPlaceholder')}
                   value={s.slotCount}
                   onChange={(e) => updateSection(i, 'slotCount', e.target.value)}
                 />
@@ -148,14 +151,14 @@ export default function AdminTemplatePage() {
           </div>
 
           <TagInput
-            label="Venue Names *"
+            label={t('adminTemplate.venueNames')}
             tags={venueNames}
             onChange={setVenueNames}
-            placeholder="Type venue name and press Enter"
+            placeholder={t('adminTemplate.venueNamesPlaceholder')}
           />
 
           <button type="submit" className="btn btn-primary btn-lg btn-block mt-2" disabled={loading}>
-            {loading ? 'Uploading...' : 'Add Template'}
+            {loading ? t('adminTemplate.submitting') : t('adminTemplate.submit')}
           </button>
         </form>
       </div>

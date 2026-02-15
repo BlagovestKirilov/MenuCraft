@@ -1,0 +1,229 @@
+{
+  "common": {
+    "appName": "MenuCraft",
+    "loading": "Зареждане...",
+    "search": "Търси",
+    "add": "Добави",
+    "save": "Запази",
+    "cancel": "Отказ",
+    "delete": "Изтрий",
+    "back": "Назад",
+    "logout": "Изход",
+    "login": "Вход",
+    "register": "Регистрация",
+    "submit": "Изпрати",
+    "download": "Изтегли",
+    "close": "Затвори",
+    "noResults": "Няма намерени резултати.",
+    "optional": "По избор",
+    "required": "Задължително",
+    "select": "-- Избери --",
+    "error": "Възникна неочаквана грешка"
+  },
+  "nav": {
+    "dashboard": "Начало",
+    "venues": "Заведения",
+    "templates": "Шаблони",
+    "menu": "Меню",
+    "facebook": "Фейсбук",
+    "admin": "Админ",
+    "login": "Вход",
+    "register": "Регистрация"
+  },
+  "login": {
+    "title": "Добре дошли",
+    "subtitle": "Влезте в своя MenuCraft акаунт",
+    "username": "Потребителско име",
+    "usernamePlaceholder": "Въведете потребителско име",
+    "password": "Парола",
+    "passwordPlaceholder": "Въведете парола",
+    "submit": "Вход",
+    "submitting": "Влизане...",
+    "noAccount": "Нямате акаунт?",
+    "registerLink": "Регистрирайте се"
+  },
+  "register": {
+    "title": "Създаване на акаунт",
+    "subtitle": "Регистрирайте нов MenuCraft акаунт",
+    "username": "Потребителско име",
+    "usernamePlaceholder": "4-20 букви и цифри",
+    "password": "Парола",
+    "passwordPlaceholder": "5-50 символа",
+    "role": "Роля",
+    "roleCompany": "Компания",
+    "roleAdmin": "Администратор",
+    "submit": "Регистрация",
+    "submitting": "Създаване на акаунт...",
+    "hasAccount": "Вече имате акаунт?",
+    "loginLink": "Влезте"
+  },
+  "dashboard": {
+    "title": "Начало",
+    "subtitle": "Добре дошли в MenuCraft. Изберете действие по-долу.",
+    "cards": {
+      "venues": {
+        "title": "Моите заведения",
+        "description": "Преглед и управление на регистрираните заведения."
+      },
+      "registerVenue": {
+        "title": "Регистрация на заведение",
+        "description": "Създайте ново заведение и го свържете с акаунти."
+      },
+      "templates": {
+        "title": "Преглед на шаблони",
+        "description": "Разгледайте шаблоните, свързани с вашите заведения."
+      },
+      "menu": {
+        "title": "Генериране на меню",
+        "description": "Създайте PDF меню от шаблон и ястия."
+      },
+      "facebook": {
+        "title": "Фейсбук интеграция",
+        "description": "Свържете страници и публикувайте във Фейсбук."
+      }
+    },
+    "adminCards": {
+      "addTemplate": {
+        "title": "Добавяне на шаблон",
+        "description": "Качете нов PDF шаблон със секции."
+      },
+      "browseTemplates": {
+        "title": "Преглед на шаблони",
+        "description": "Преглед и изтегляне на качените шаблони."
+      }
+    }
+  },
+  "venues": {
+    "title": "Моите заведения",
+    "subtitle": "Заведения, свързани с вашия акаунт.",
+    "registerNew": "Регистрирай ново заведение",
+    "noVenues": "Все още нямате заведения. Регистрирайте едно, за да започнете!",
+    "noVenuesUser": "Все още нямате заведения.",
+    "viewTemplates": "Преглед на шаблони",
+    "name": "Име",
+    "email": "Имейл",
+    "phone": "Телефон",
+    "city": "Град",
+    "address": "Адрес",
+    "description": "Описание"
+  },
+  "venueRegister": {
+    "title": "Регистрация на заведение",
+    "subtitle": "Създайте ново заведение и го свържете с потребителски акаунти.",
+    "name": "Име на заведение",
+    "namePlaceholder": "2-100 символа",
+    "email": "Имейл",
+    "emailPlaceholder": "zavedenie@example.com",
+    "phone": "Телефон",
+    "phonePlaceholder": "6-20 символа",
+    "city": "Град",
+    "address": "Адрес",
+    "description": "Описание",
+    "descriptionPlaceholder": "По избор, макс. 500 символа",
+    "accountUsernames": "Потребителски имена *",
+    "accountUsernamesPlaceholder": "Въведете име и натиснете Enter",
+    "submit": "Регистрирай заведение",
+    "submitting": "Регистриране...",
+    "success": "Заведението е регистрирано успешно!"
+  },
+  "venueTemplates": {
+    "title": "Шаблони на заведение",
+    "subtitle": "Потърсете шаблони, свързани със заведение.",
+    "searchPlaceholder": "Въведете име на заведение",
+    "noTemplates": "Няма намерени шаблони за това заведение.",
+    "clickHint": "Натиснете върху шаблон, за да генерирате меню от него.",
+    "name": "Име",
+    "description": "Описание",
+    "contentType": "Тип съдържание",
+    "sections": "Секции",
+    "created": "Създаден"
+  },
+  "menuGenerator": {
+    "title": "Генериране на меню",
+    "subtitle": "Попълнете данни за ястията и генерирайте PDF меню от шаблон.",
+    "templateName": "Име на шаблон",
+    "templateNamePlaceholder": "Въведете име на шаблон",
+    "saladsLabel": "Салати",
+    "soupsLabel": "Супи",
+    "mainCoursesLabel": "Основни ястия",
+    "mealNamePlaceholder": "Име на ястие",
+    "pricePlaceholder": "Цена",
+    "addMeal": "+ Добави",
+    "noItems": "Все още няма елементи. Натиснете \"+ Добави\", за да започнете.",
+    "submit": "Генерирай PDF меню",
+    "submitting": "Генериране...",
+    "success": "PDF менюто е генерирано и изтеглено!",
+    "limitsInfo": "Лимити на шаблона — Салати: {{salads}}, Супи: {{soups}}, Основни ястия: {{mainCourses}}",
+    "limitError": "{{section}} не може да надвишава {{max}} елемента."
+  },
+  "adminTemplate": {
+    "title": "Добавяне на шаблон",
+    "subtitle": "Качете PDF шаблон със секции и го свържете със заведения.",
+    "name": "Име на шаблон",
+    "namePlaceholder": "2-100 символа",
+    "description": "Описание",
+    "descriptionPlaceholder": "По избор, макс. 500 символа",
+    "contentType": "Тип съдържание",
+    "contentTypePlaceholder": "application/pdf",
+    "fileLabel": "Файл на шаблон (PDF) *",
+    "fileDrop": "Плъзнете PDF файл или натиснете за избор",
+    "fileRequired": "Моля, качете файл на шаблон.",
+    "sections": "Секции на шаблон",
+    "addSection": "+ Добави секция",
+    "sectionSoup": "Супа",
+    "sectionSalad": "Салата",
+    "sectionMainCourse": "Основно ястие",
+    "sectionDessert": "Десерт",
+    "slotsPlaceholder": "Слотове",
+    "venueNames": "Имена на заведения *",
+    "venueNamesPlaceholder": "Въведете име на заведение и натиснете Enter",
+    "submit": "Добави шаблон",
+    "submitting": "Качване...",
+    "success": "Шаблонът е добавен успешно!"
+  },
+  "adminTemplateList": {
+    "title": "Изтегляне на файл на шаблон",
+    "subtitle": "Въведете ID на шаблон, за да изтеглите файла му.",
+    "templateId": "UUID на шаблон",
+    "templateIdPlaceholder": "напр. 3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    "submit": "Изтегли файл",
+    "submitting": "Изтегляне..."
+  },
+  "facebook": {
+    "title": "Фейсбук интеграция",
+    "subtitle": "Свържете вашите Фейсбук страници и публикувайте съдържание.",
+    "connectTitle": "Свързване на Фейсбук страница",
+    "venueId": "ID на заведение",
+    "venueIdPlaceholder": "Въведете UUID на заведение",
+    "connectButton": "Свържи Фейсбук",
+    "connecting": "Пренасочване...",
+    "connectionsTitle": "Преглед на връзки",
+    "loadButton": "Зареди",
+    "noConnections": "Няма намерени връзки.",
+    "page": "Страница",
+    "status": "Статус",
+    "action": "Действие",
+    "postButton": "Публикувай"
+  },
+  "facebookPost": {
+    "title": "Публикуване във Фейсбук",
+    "connection": "Връзка:",
+    "message": "Съобщение",
+    "messagePlaceholder": "Какво искате да публикувате?",
+    "photoUrl": "URL на снимка (по избор)",
+    "photoUrlPlaceholder": "https://example.com/image.jpg",
+    "photoUrlHint": "Публично достъпен URL на изображение за публикации със снимки",
+    "submit": "Публикувай",
+    "submitting": "Публикуване...",
+    "success": "Публикацията е създадена! ID: {{postId}}",
+    "backToFacebook": "Назад към Фейсбук"
+  },
+  "facebookCallback": {
+    "successTitle": "Фейсбук е свързан!",
+    "successMessage": "{{count}} страница(и) свързана(и) успешно.",
+    "successInfo": "Вашата Фейсбук страница вече е свързана. Можете да започнете да публикувате от секцията за Фейсбук.",
+    "failTitle": "Неуспешно свързване",
+    "failMessage": "Нещо се обърка при свързването с Фейсбук.",
+    "goToFacebook": "Към Фейсбук"
+  }
+}

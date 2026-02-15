@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import FormField from '../components/FormField';
 import TagInput from '../components/TagInput';
 import ErrorAlert from '../components/ErrorAlert';
@@ -16,6 +17,7 @@ const INITIAL = {
 };
 
 export default function VenueRegisterPage() {
+  const { t } = useTranslation();
   const [form, setForm] = useState(INITIAL);
   const [usernames, setUsernames] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -32,7 +34,7 @@ export default function VenueRegisterPage() {
     try {
       const payload = { ...form, accountUsernames: usernames };
       await registerVenue(payload);
-      setSuccess('Venue registered successfully!');
+      setSuccess(t('venueRegister.success'));
       setForm(INITIAL);
       setUsernames([]);
     } catch (err) {
@@ -45,8 +47,8 @@ export default function VenueRegisterPage() {
   return (
     <div className="page-container">
       <div className="page-header">
-        <h1>Register Venue</h1>
-        <p>Create a new venue and link it to user accounts.</p>
+        <h1>{t('venueRegister.title')}</h1>
+        <p>{t('venueRegister.subtitle')}</p>
       </div>
 
       <div className="card" style={{ maxWidth: 640 }}>
@@ -54,29 +56,29 @@ export default function VenueRegisterPage() {
         <SuccessAlert message={success} onClose={() => setSuccess('')} />
 
         <form onSubmit={handleSubmit}>
-          <FormField label="Venue Name" name="name" value={form.name} onChange={handleChange} placeholder="2-100 characters" required />
+          <FormField label={t('venueRegister.name')} name="name" value={form.name} onChange={handleChange} placeholder={t('venueRegister.namePlaceholder')} required />
 
           <div className="form-row">
-            <FormField label="Email" name="email" type="email" value={form.email} onChange={handleChange} placeholder="venue@example.com" required />
-            <FormField label="Phone" name="phone" value={form.phone} onChange={handleChange} placeholder="6-20 characters" required />
+            <FormField label={t('venueRegister.email')} name="email" type="email" value={form.email} onChange={handleChange} placeholder={t('venueRegister.emailPlaceholder')} required />
+            <FormField label={t('venueRegister.phone')} name="phone" value={form.phone} onChange={handleChange} placeholder={t('venueRegister.phonePlaceholder')} required />
           </div>
 
           <div className="form-row">
-            <FormField label="City" name="city" value={form.city} onChange={handleChange} required />
-            <FormField label="Address" name="address" value={form.address} onChange={handleChange} required />
+            <FormField label={t('venueRegister.city')} name="city" value={form.city} onChange={handleChange} required />
+            <FormField label={t('venueRegister.address')} name="address" value={form.address} onChange={handleChange} required />
           </div>
 
-          <FormField label="Description" name="description" type="textarea" value={form.description} onChange={handleChange} placeholder="Optional, max 500 chars" />
+          <FormField label={t('venueRegister.description')} name="description" type="textarea" value={form.description} onChange={handleChange} placeholder={t('venueRegister.descriptionPlaceholder')} />
 
           <TagInput
-            label="Account Usernames *"
+            label={t('venueRegister.accountUsernames')}
             tags={usernames}
             onChange={setUsernames}
-            placeholder="Type username and press Enter"
+            placeholder={t('venueRegister.accountUsernamesPlaceholder')}
           />
 
           <button type="submit" className="btn btn-primary btn-lg btn-block mt-2" disabled={loading}>
-            {loading ? 'Registering...' : 'Register Venue'}
+            {loading ? t('venueRegister.submitting') : t('venueRegister.submit')}
           </button>
         </form>
       </div>

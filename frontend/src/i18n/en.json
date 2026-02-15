@@ -1,0 +1,229 @@
+{
+  "common": {
+    "appName": "MenuCraft",
+    "loading": "Loading...",
+    "search": "Search",
+    "add": "Add",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "back": "Back",
+    "logout": "Logout",
+    "login": "Login",
+    "register": "Register",
+    "submit": "Submit",
+    "download": "Download",
+    "close": "Close",
+    "noResults": "No results found.",
+    "optional": "Optional",
+    "required": "Required",
+    "select": "-- Select --",
+    "error": "An unexpected error occurred"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "venues": "Venues",
+    "templates": "Templates",
+    "menu": "Menu",
+    "facebook": "Facebook",
+    "admin": "Admin",
+    "login": "Login",
+    "register": "Register"
+  },
+  "login": {
+    "title": "Welcome back",
+    "subtitle": "Sign in to your MenuCraft account",
+    "username": "Username",
+    "usernamePlaceholder": "Enter username",
+    "password": "Password",
+    "passwordPlaceholder": "Enter password",
+    "submit": "Sign In",
+    "submitting": "Signing in...",
+    "noAccount": "Don't have an account?",
+    "registerLink": "Register"
+  },
+  "register": {
+    "title": "Create Account",
+    "subtitle": "Register a new MenuCraft account",
+    "username": "Username",
+    "usernamePlaceholder": "4-20 alphanumeric characters",
+    "password": "Password",
+    "passwordPlaceholder": "5-50 characters",
+    "role": "Role",
+    "roleCompany": "Company",
+    "roleAdmin": "Admin",
+    "submit": "Register",
+    "submitting": "Creating account...",
+    "hasAccount": "Already have an account?",
+    "loginLink": "Sign in"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Welcome to MenuCraft. Choose an action below.",
+    "cards": {
+      "venues": {
+        "title": "My Venues",
+        "description": "View and manage your registered venues."
+      },
+      "registerVenue": {
+        "title": "Register Venue",
+        "description": "Create a new venue and link it to accounts."
+      },
+      "templates": {
+        "title": "View Templates",
+        "description": "Browse templates assigned to your venues."
+      },
+      "menu": {
+        "title": "Generate Menu",
+        "description": "Create a PDF menu from a template and meals."
+      },
+      "facebook": {
+        "title": "Facebook Integration",
+        "description": "Connect pages and post to Facebook."
+      }
+    },
+    "adminCards": {
+      "addTemplate": {
+        "title": "Add Template",
+        "description": "Upload a new PDF template with sections."
+      },
+      "browseTemplates": {
+        "title": "Browse Templates",
+        "description": "View and download uploaded templates."
+      }
+    }
+  },
+  "venues": {
+    "title": "My Venues",
+    "subtitle": "Venues associated with your account.",
+    "registerNew": "Register New Venue",
+    "noVenues": "You don't have any venues yet. Register one to get started!",
+    "noVenuesUser": "You don't have any venues yet.",
+    "viewTemplates": "View Templates",
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "city": "City",
+    "address": "Address",
+    "description": "Description"
+  },
+  "venueRegister": {
+    "title": "Register Venue",
+    "subtitle": "Create a new venue and link it to user accounts.",
+    "name": "Venue Name",
+    "namePlaceholder": "2-100 characters",
+    "email": "Email",
+    "emailPlaceholder": "venue@example.com",
+    "phone": "Phone",
+    "phonePlaceholder": "6-20 characters",
+    "city": "City",
+    "address": "Address",
+    "description": "Description",
+    "descriptionPlaceholder": "Optional, max 500 chars",
+    "accountUsernames": "Account Usernames *",
+    "accountUsernamesPlaceholder": "Type username and press Enter",
+    "submit": "Register Venue",
+    "submitting": "Registering...",
+    "success": "Venue registered successfully!"
+  },
+  "venueTemplates": {
+    "title": "Venue Templates",
+    "subtitle": "Look up templates assigned to a venue.",
+    "searchPlaceholder": "Enter venue name",
+    "noTemplates": "No templates found for this venue.",
+    "clickHint": "Click a template to generate a menu from it.",
+    "name": "Name",
+    "description": "Description",
+    "contentType": "Content Type",
+    "sections": "Sections",
+    "created": "Created"
+  },
+  "menuGenerator": {
+    "title": "Generate Menu",
+    "subtitle": "Fill in meal data and generate a PDF menu from a template.",
+    "templateName": "Template Name",
+    "templateNamePlaceholder": "Enter template name",
+    "saladsLabel": "Salads",
+    "soupsLabel": "Soups",
+    "mainCoursesLabel": "Main Courses",
+    "mealNamePlaceholder": "Meal name",
+    "pricePlaceholder": "Price",
+    "addMeal": "+ Add",
+    "noItems": "No items yet. Click \"+ Add\" to start.",
+    "submit": "Generate PDF Menu",
+    "submitting": "Generating...",
+    "success": "Menu PDF generated and downloaded!",
+    "limitsInfo": "Template limits — Salads: {{salads}}, Soups: {{soups}}, Main Courses: {{mainCourses}}",
+    "limitError": "{{section}} cannot exceed {{max}} items."
+  },
+  "adminTemplate": {
+    "title": "Add Template",
+    "subtitle": "Upload a PDF template with sections and assign to venues.",
+    "name": "Template Name",
+    "namePlaceholder": "2-100 characters",
+    "description": "Description",
+    "descriptionPlaceholder": "Optional, max 500 chars",
+    "contentType": "Content Type",
+    "contentTypePlaceholder": "application/pdf",
+    "fileLabel": "Template File (PDF) *",
+    "fileDrop": "Drop a PDF file or click to browse",
+    "fileRequired": "Please upload a template file.",
+    "sections": "Template Sections",
+    "addSection": "+ Add Section",
+    "sectionSoup": "Soup",
+    "sectionSalad": "Salad",
+    "sectionMainCourse": "Main Course",
+    "sectionDessert": "Dessert",
+    "slotsPlaceholder": "Slots",
+    "venueNames": "Venue Names *",
+    "venueNamesPlaceholder": "Type venue name and press Enter",
+    "submit": "Add Template",
+    "submitting": "Uploading...",
+    "success": "Template added successfully!"
+  },
+  "adminTemplateList": {
+    "title": "Download Template File",
+    "subtitle": "Enter a template ID to download its file.",
+    "templateId": "Template UUID",
+    "templateIdPlaceholder": "e.g. 3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    "submit": "Download File",
+    "submitting": "Downloading..."
+  },
+  "facebook": {
+    "title": "Facebook Integration",
+    "subtitle": "Connect your Facebook Pages and post content.",
+    "connectTitle": "Connect Facebook Page",
+    "venueId": "Venue ID",
+    "venueIdPlaceholder": "Enter venue UUID",
+    "connectButton": "Connect Facebook",
+    "connecting": "Redirecting...",
+    "connectionsTitle": "View Connections",
+    "loadButton": "Load",
+    "noConnections": "No connections found.",
+    "page": "Page",
+    "status": "Status",
+    "action": "Action",
+    "postButton": "Post"
+  },
+  "facebookPost": {
+    "title": "Post to Facebook",
+    "connection": "Connection:",
+    "message": "Message",
+    "messagePlaceholder": "What do you want to post?",
+    "photoUrl": "Photo URL (optional)",
+    "photoUrlPlaceholder": "https://example.com/image.jpg",
+    "photoUrlHint": "Publicly accessible image URL for photo posts",
+    "submit": "Publish Post",
+    "submitting": "Publishing...",
+    "success": "Post published! ID: {{postId}}",
+    "backToFacebook": "Back to Facebook"
+  },
+  "facebookCallback": {
+    "successTitle": "Facebook Connected!",
+    "successMessage": "{{count}} page(s) linked successfully.",
+    "successInfo": "Your Facebook Page is now connected. You can start posting from the Facebook section.",
+    "failTitle": "Connection Failed",
+    "failMessage": "Something went wrong during the Facebook connection.",
+    "goToFacebook": "Go to Facebook"
+  }
+}

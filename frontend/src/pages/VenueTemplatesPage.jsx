@@ -1,4 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import FormField from '../components/FormField';
 import ErrorAlert from '../components/ErrorAlert';
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -6,20 +8,26 @@ import { getTemplatesByVenue } from '../api/venueApi';
 import { getErrorMessage } from '../utils/helpers';
 
 export default function VenueTemplatesPage() {
-  const [venueName, setVenueName] = useState('');
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const didFetch = useRef(false);
+
+  const initialVenue = searchParams.get('venue') || '';
+
+  const [venueName, setVenueName] = useState(initialVenue);
   const [templates, setTemplates] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [searched, setSearched] = useState(false);
 
-  const handleSearch = async (e) => {
-    e.preventDefault();
-    if (!venueName.trim()) return;
+  const fetchTemplates = async (name) => {
+    if (!name.trim()) return;
     setError('');
     setLoading(true);
     setSearched(true);
     try {
-      const data = await getTemplatesByVenue(venueName.trim());
+      const data = await getTemplatesByVenue(name.trim());
       setTemplates(data);
     } catch (err) {
       setError(getErrorMessage(err));
@@ -29,25 +37,58 @@ export default function VenueTemplatesPage() {
     }
   };
 
+  // Auto-load if venue name comes from URL query param (guard against StrictMode double-fire)
+  useEffect(() => {
+    if (initialVenue && !didFetch.current) {
+      didFetch.current = true;
+      fetchTemplates(initialVenue);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    fetchTemplates(venueName);
+  };
+
+  const handleTemplateClick = (tpl) => {
+    // Build section limits from template sections
+    const sections = {};
+    tpl.sections?.forEach((s) => {
+      const key = s.type?.toLowerCase();
+      if (key === 'salad') sections.salads = s.slotCount;
+      else if (key === 'soup') sections.soups = s.slotCount;
+      else if (key === 'main_course') sections.mainCourses = s.slotCount;
+    });
+
+    const params = new URLSearchParams();
+    params.set('template', tpl.name);
+    if (sections.salads) params.set('salads', sections.salads);
+    if (sections.soups) params.set('soups', sections.soups);
+    if (sections.mainCourses) params.set('mainCourses', sections.mainCourses);
+
+    navigate(`/menu/generate?${params.toString()}`);
+  };
+
   return (
     <div className="page-container">
       <div className="page-header">
-        <h1>Venue Templates</h1>
-        <p>Look up templates assigned to a venue.</p>
+        <h1>{t('venueTemplates.title')}</h1>
+        <p>{t('venueTemplates.subtitle')}</p>
       </div>
 
-      <div className="card" style={{ maxWidth: 800 }}>
+      <div className="card" style={{ maxWidth: 900 }}>
         <form onSubmit={handleSearch} className="flex gap-1 items-center mb-2">
           <div style={{ flex: 1 }}>
             <FormField
               name="venueName"
               value={venueName}
               onChange={(_, v) => setVenueName(v)}
-              placeholder="Enter venue name"
+              placeholder={t('venueTemplates.searchPlaceholder')}
             />
           </div>
           <button type="submit" className="btn btn-primary" disabled={loading}>
-            Search
+            {t('common.search')}
           </button>
         </form>
 
@@ -56,44 +97,56 @@ export default function VenueTemplatesPage() {
         {loading && <LoadingSpinner />}
 
         {!loading && searched && templates.length === 0 && !error && (
-          <p className="text-secondary text-center mt-2">No templates found for this venue.</p>
+          <p className="text-secondary text-center mt-2">{t('venueTemplates.noTemplates')}</p>
         )}
 
         {templates.length > 0 && (
-          <div className="table-wrapper mt-2">
-            <table>
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Description</th>
-                  <th>Content Type</th>
-                  <th>Sections</th>
-                  <th>Created</th>
-                </tr>
-              </thead>
-              <tbody>
-                {templates.map((t, i) => (
-                  <tr key={i}>
-                    <td style={{ fontWeight: 600 }}>{t.name}</td>
-                    <td>{t.description || '—'}</td>
-                    <td>
-                      <span className="badge badge-info">{t.contentType || 'N/A'}</span>
-                    </td>
-                    <td>
-                      {t.sections?.map((s, j) => (
-                        <span key={j} className="badge badge-success" style={{ marginRight: 4 }}>
-                          {s.type} ({s.slotCount})
-                        </span>
-                      ))}
-                    </td>
-                    <td className="text-secondary" style={{ fontSize: '0.8125rem' }}>
-                      {t.createdAt ? new Date(t.createdAt).toLocaleDateString() : '—'}
-                    </td>
+          <>
+            <p className="text-secondary" style={{ fontSize: '0.8125rem', marginBottom: '0.5rem' }}>
+              {t('venueTemplates.clickHint')}
+            </p>
+            <div className="table-wrapper mt-2">
+              <table>
+                <thead>
+                  <tr>
+                    <th>{t('venueTemplates.name')}</th>
+                    <th>{t('venueTemplates.description')}</th>
+                    <th>{t('venueTemplates.contentType')}</th>
+                    <th>{t('venueTemplates.sections')}</th>
+                    <th>{t('venueTemplates.created')}</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {templates.map((tpl, i) => (
+                    <tr
+                      key={i}
+                      className="clickable-row"
+                      onClick={() => handleTemplateClick(tpl)}
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={(e) => e.key === 'Enter' && handleTemplateClick(tpl)}
+                    >
+                      <td style={{ fontWeight: 600 }}>{tpl.name}</td>
+                      <td>{tpl.description || '—'}</td>
+                      <td>
+                        <span className="badge badge-info">{tpl.contentType || 'N/A'}</span>
+                      </td>
+                      <td>
+                        {tpl.sections?.map((s, j) => (
+                          <span key={j} className="badge badge-success" style={{ marginRight: 4 }}>
+                            {s.type} ({s.slotCount})
+                          </span>
+                        ))}
+                      </td>
+                      <td className="text-secondary" style={{ fontSize: '0.8125rem' }}>
+                        {tpl.createdAt ? new Date(tpl.createdAt).toLocaleDateString() : '—'}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </div>
     </div>

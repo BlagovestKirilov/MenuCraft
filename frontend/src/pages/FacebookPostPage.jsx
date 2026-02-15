@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import FormField from '../components/FormField';
 import ErrorAlert from '../components/ErrorAlert';
 import SuccessAlert from '../components/SuccessAlert';
@@ -8,6 +9,7 @@ import { getErrorMessage } from '../utils/helpers';
 
 export default function FacebookPostPage() {
   const { connectionId } = useParams();
+  const { t } = useTranslation();
 
   const [message, setMessage] = useState('');
   const [photoUrl, setPhotoUrl] = useState('');
@@ -27,7 +29,7 @@ export default function FacebookPostPage() {
         ...(photoUrl.trim() ? { photoUrl: photoUrl.trim() } : {}),
       };
       const res = await postToFacebook(payload);
-      setSuccess(`Post published! ID: ${res.postId}`);
+      setSuccess(t('facebookPost.success', { postId: res.postId }));
       setMessage('');
       setPhotoUrl('');
     } catch (err) {
@@ -40,9 +42,9 @@ export default function FacebookPostPage() {
   return (
     <div className="page-container">
       <div className="page-header">
-        <h1>Post to Facebook</h1>
+        <h1>{t('facebookPost.title')}</h1>
         <p>
-          Connection: <code>{connectionId}</code>
+          {t('facebookPost.connection')} <code>{connectionId}</code>
         </p>
       </div>
 
@@ -52,30 +54,30 @@ export default function FacebookPostPage() {
 
         <form onSubmit={handleSubmit}>
           <FormField
-            label="Message"
+            label={t('facebookPost.message')}
             name="message"
             type="textarea"
             value={message}
             onChange={(_, v) => setMessage(v)}
-            placeholder="What do you want to post?"
+            placeholder={t('facebookPost.messagePlaceholder')}
             required
           />
           <FormField
-            label="Photo URL (optional)"
+            label={t('facebookPost.photoUrl')}
             name="photoUrl"
             value={photoUrl}
             onChange={(_, v) => setPhotoUrl(v)}
-            placeholder="https://example.com/image.jpg"
-            hint="Publicly accessible image URL for photo posts"
+            placeholder={t('facebookPost.photoUrlPlaceholder')}
+            hint={t('facebookPost.photoUrlHint')}
           />
           <button type="submit" className="btn btn-primary btn-lg btn-block mt-2" disabled={loading}>
-            {loading ? 'Publishing...' : 'Publish Post'}
+            {loading ? t('facebookPost.submitting') : t('facebookPost.submit')}
           </button>
         </form>
 
         <div className="mt-2">
           <Link to="/facebook" className="btn btn-secondary">
-            Back to Facebook
+            {t('facebookPost.backToFacebook')}
           </Link>
         </div>
       </div>

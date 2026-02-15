@@ -4,6 +4,7 @@ import bg.menucraft.model.dto.TemplateDto;
 import bg.menucraft.model.request.MenuGenerationRequest;
 import bg.menucraft.model.request.VenueRegistrationRequest;
 import bg.menucraft.model.response.ApiResponse;
+import bg.menucraft.model.response.VenueResponse;
 import bg.menucraft.service.FileGenerationService;
 import bg.menucraft.service.TemplateService;
 import bg.menucraft.service.VenueService;
@@ -27,6 +28,11 @@ public class VenueController {
     private final VenueService venueService;
     private final FileGenerationService fileGenerationService;
     private final TemplateService templateService;
+
+    @GetMapping
+    public ResponseEntity<VenueResponse> getVenues() {
+        return ResponseEntity.ok(venueService.getVenues());
+    }
 
     @PostMapping("/register")
     public ResponseEntity<ApiResponse> register(@Valid @RequestBody VenueRegistrationRequest registrationRequest) {

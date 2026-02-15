@@ -8,6 +8,7 @@ import RegisterPage from '../pages/RegisterPage';
 
 // Public / Venue pages
 import DashboardPage from '../pages/DashboardPage';
+import VenuesPage from '../pages/VenuesPage';
 import VenueRegisterPage from '../pages/VenueRegisterPage';
 import VenueTemplatesPage from '../pages/VenueTemplatesPage';
 import MenuGeneratorPage from '../pages/MenuGeneratorPage';
@@ -45,6 +46,14 @@ export default function AppRouter() {
         />
 
         {/* Venue */}
+        <Route
+          path="/venues"
+          element={
+            <PrivateRoute>
+              <VenuesPage />
+            </PrivateRoute>
+          }
+        />
         <Route
           path="/venue/register"
           element={

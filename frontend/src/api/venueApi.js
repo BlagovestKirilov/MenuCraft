@@ -1,6 +1,14 @@
 import client from './client';
 
 /**
+ * GET /venue
+ * Fetches venues for the authenticated user (derived from token).
+ * @returns {Promise<{ venues: Array<VenueDto> }>}
+ */
+export const getVenues = () =>
+  client.get('/venue').then((r) => r.data);
+
+/**
  * POST /venue/register
  * @param {Object} data - VenueRegistrationRequest
  */

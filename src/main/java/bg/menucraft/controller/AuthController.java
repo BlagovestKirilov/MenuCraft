@@ -2,6 +2,7 @@ package bg.menucraft.controller;
 
 import bg.menucraft.model.request.AccountRegistrationRequest;
 import bg.menucraft.model.request.LoginRequest;
+import bg.menucraft.model.request.RefreshTokenRequest;
 import bg.menucraft.model.response.ApiResponse;
 import bg.menucraft.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,5 +29,10 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<ApiResponse> register(@Valid @RequestBody AccountRegistrationRequest registrationRequest, HttpServletRequest httpServletRequest) {
         return ResponseEntity.ok(authService.register(registrationRequest, httpServletRequest));
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<ApiResponse> refresh(@Valid @RequestBody RefreshTokenRequest refreshTokenRequest) {
+        return ResponseEntity.ok(authService.refresh(refreshTokenRequest));
     }
 }

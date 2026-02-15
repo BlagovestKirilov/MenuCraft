@@ -487,6 +487,34 @@ tr:hover td {
   margin-top: 0.5rem;
 }
 
+/* ───────── Clickable venue card ───────── */
+.venue-card {
+  cursor: pointer;
+  transition: var(--transition);
+  border: 2px solid transparent;
+}
+
+.venue-card:hover {
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+.venue-card:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* ───────── Clickable table row ───────── */
+tr.clickable-row {
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+tr.clickable-row:hover td {
+  background: var(--color-primary-light) !important;
+}
+
 /* ───────── Grid Layouts ───────── */
 .grid-2 {
   display: grid;
@@ -523,6 +551,44 @@ tr:hover td {
   line-height: 1;
   padding: 0;
   margin-left: 0.125rem;
+}
+
+/* ───────── Language Switcher ───────── */
+.language-switcher {
+  display: inline-flex;
+  gap: 2px;
+  background: var(--color-input-bg);
+  border-radius: var(--radius);
+  padding: 3px;
+  border: 1px solid var(--color-border);
+}
+
+.lang-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 8px;
+  border: 2px solid transparent;
+  border-radius: calc(var(--radius) - 2px);
+  cursor: pointer;
+  background: transparent;
+  transition: var(--transition);
+  opacity: 0.45;
+}
+
+.lang-btn svg {
+  display: block;
+}
+
+.lang-btn:hover {
+  background: var(--color-surface);
+  opacity: 0.75;
+}
+
+.lang-btn-active {
+  opacity: 1 !important;
+  background: var(--color-surface) !important;
+  border-color: var(--color-primary) !important;
 }
 
 /* ───────── Utility ───────── */

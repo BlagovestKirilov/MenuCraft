@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import FormField from '../components/FormField';
 import ErrorAlert from '../components/ErrorAlert';
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -6,6 +7,7 @@ import { downloadTemplateFile } from '../api/adminApi';
 import { getErrorMessage, downloadBlob } from '../utils/helpers';
 
 export default function AdminTemplateListPage() {
+  const { t } = useTranslation();
   const [templateId, setTemplateId] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -28,8 +30,8 @@ export default function AdminTemplateListPage() {
   return (
     <div className="page-container">
       <div className="page-header">
-        <h1>Download Template File</h1>
-        <p>Enter a template ID to download its file.</p>
+        <h1>{t('adminTemplateList.title')}</h1>
+        <p>{t('adminTemplateList.subtitle')}</p>
       </div>
 
       <div className="card" style={{ maxWidth: 560 }}>
@@ -37,15 +39,15 @@ export default function AdminTemplateListPage() {
 
         <form onSubmit={handleDownload}>
           <FormField
-            label="Template UUID"
+            label={t('adminTemplateList.templateId')}
             name="templateId"
             value={templateId}
             onChange={(_, v) => setTemplateId(v)}
-            placeholder="e.g. 3fa85f64-5717-4562-b3fc-2c963f66afa6"
+            placeholder={t('adminTemplateList.templateIdPlaceholder')}
             required
           />
           <button type="submit" className="btn btn-primary btn-lg btn-block" disabled={loading}>
-            {loading ? 'Downloading...' : 'Download File'}
+            {loading ? t('adminTemplateList.submitting') : t('adminTemplateList.submit')}
           </button>
         </form>
 
