@@ -31,6 +31,7 @@ public class FileGenerationService {
 
     private static final int FONT_SIZE = 14;
     private final TemplateRepository templateRepository;
+    private final GeneratedMenuService generatedMenuService;
 
     @SneakyThrows
     public byte[] generateMenu(MenuGenerationRequest menuGenerationRequest) {
@@ -98,8 +99,10 @@ public class FileGenerationService {
 
             // 7️⃣ Flatten
             acroForm.flatten();
-
             document.save(baos);
+
+            generatedMenuService.saveMenuGeneration(menuGenerationRequest);
+
             return baos.toByteArray();
         }
     }
