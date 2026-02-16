@@ -76,8 +76,8 @@ export default function FacebookPostPage() {
         </form>
 
         <div className="mt-2">
-          <Link to="/facebook" className="btn btn-secondary">
-            {t('facebookPost.backToFacebook')}
+          <Link to="/venues" className="btn btn-secondary">
+            {t('facebookPost.backToVenues')}
           </Link>
         </div>
       </div>

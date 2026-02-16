@@ -49,22 +49,22 @@ public class FacebookOAuthService {
 
     /**
      * In-memory store for CSRF state tokens.
-     * Maps state → venueId so the callback knows which venue to link.
+     * Maps state → venueName so the callback knows which venue to link.
      * In production with multiple instances, use Redis or a DB table instead.
      */
-    private final Map<String, UUID> stateStore = new ConcurrentHashMap<>();
+    private final Map<String, String> stateStore = new ConcurrentHashMap<>();
 
     // ───────────────────── 1. Generate Login URL ─────────────────────
 
     /**
      * Builds the Facebook OAuth login URL for the given venue.
      *
-     * @param venueId the venue that wants to connect a Facebook Page
+     * @param venueName the name of the venue that wants to connect a Facebook Page
      * @return the full Facebook login URL the frontend should redirect to
      */
-    public String generateLoginUrl(UUID venueId) {
+    public String generateLoginUrl(String venueName) {
         String state = generateState();
-        stateStore.put(state, venueId);
+        stateStore.put(state, venueName);
 
         return OAUTH_DIALOG
                 + "?client_id=" + encode(facebookProperties.appId())
@@ -87,13 +87,13 @@ public class FacebookOAuthService {
     @Transactional
     public FacebookOAuthResponse handleCallback(String code, String state) {
         // Validate CSRF state
-        UUID venueId = stateStore.remove(state);
-        if (venueId == null) {
+        String venueName = stateStore.remove(state);
+        if (venueName == null) {
             return FacebookOAuthResponse.error("Invalid or expired OAuth state. Please restart the connection.");
         }
 
-        Venue venue = venueRepository.findById(venueId)
-                .orElseThrow(() -> new RuntimeException("Venue not found: " + venueId));
+        Venue venue = venueRepository.findByName(venueName)
+                .orElseThrow(() -> new RuntimeException("Venue not found: " + venueName));
 
         // Step 1: Exchange authorization code for short-lived user access token
         String shortLivedToken = exchangeCodeForToken(code);

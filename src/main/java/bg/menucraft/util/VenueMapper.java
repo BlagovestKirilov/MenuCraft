@@ -10,16 +10,19 @@ import org.mapstruct.MappingTarget;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = FacebookConnectionMapper.class)
 public interface VenueMapper {
     @Mapping(target = "templates", ignore = true)
     @Mapping(target = "active", ignore = true)
+    @Mapping(target = "facebookConnections", ignore = true)
     Venue toEntity(VenueRegistrationRequest request);
 
     @AfterMapping
     default void setDefaults(@MappingTarget Venue venue) {
         venue.setActive(true);
     }
+
+    VenueDto toDto(Venue venue);
 
     List<VenueDto> toDtoList(List<Venue> venues);
 }

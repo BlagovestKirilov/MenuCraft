@@ -6,13 +6,16 @@ export default function DashboardPage() {
   const { isAdmin } = useAuth();
   const { t } = useTranslation();
 
-  const CARDS = [
+  const COMMON_CARDS = [
     {
       titleKey: 'dashboard.cards.venues.title',
       descKey: 'dashboard.cards.venues.description',
       link: '/venues',
       icon: '🏪',
     },
+  ];
+
+  const ADMIN_ONLY_CARDS = [
     {
       titleKey: 'dashboard.cards.templates.title',
       descKey: 'dashboard.cards.templates.description',
@@ -24,12 +27,6 @@ export default function DashboardPage() {
       descKey: 'dashboard.cards.menu.description',
       link: '/menu/generate',
       icon: '🍽️',
-    },
-    {
-      titleKey: 'dashboard.cards.facebook.title',
-      descKey: 'dashboard.cards.facebook.description',
-      link: '/facebook',
-      icon: '📘',
     },
   ];
 
@@ -48,6 +45,8 @@ export default function DashboardPage() {
     },
   ];
 
+  const cards = [...COMMON_CARDS, ...(isAdmin ? ADMIN_ONLY_CARDS : [])];
+
   return (
     <div className="page-container">
       <div className="page-header">
@@ -56,7 +55,7 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid-2">
-        {CARDS.map((c) => (
+        {cards.map((c) => (
           <Link key={c.link} to={c.link} style={{ textDecoration: 'none' }}>
             <div className="card card-compact" style={{ cursor: 'pointer', transition: 'var(--transition)' }}>
               <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>{c.icon}</div>

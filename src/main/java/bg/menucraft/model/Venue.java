@@ -1,14 +1,15 @@
 package bg.menucraft.model;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.OneToMany;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -36,5 +37,8 @@ public class Venue extends BaseEntity {
             joinColumns = @JoinColumn(name = "venue_id"),
             inverseJoinColumns = @JoinColumn(name = "template_id")
     )
-    private List<Template> templates = new ArrayList<>();
+    private List<Template> templates;
+
+    @OneToMany(mappedBy = "venue", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<FacebookConnection> facebookConnections;
 }

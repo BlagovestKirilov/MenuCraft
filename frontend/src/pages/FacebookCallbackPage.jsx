@@ -35,8 +35,8 @@ export default function FacebookCallbackPage() {
           </>
         )}
 
-        <Link to="/facebook" className="btn btn-primary btn-block mt-2">
-          {t('facebookCallback.goToFacebook')}
+        <Link to="/venues" className="btn btn-primary btn-block mt-2">
+          {t('facebookCallback.goToVenues')}
         </Link>
       </div>
     </div>

@@ -18,7 +18,6 @@ import AdminTemplatePage from '../pages/AdminTemplatePage';
 import AdminTemplateListPage from '../pages/AdminTemplateListPage';
 
 // Facebook pages
-import FacebookPage from '../pages/FacebookPage';
 import FacebookCallbackPage from '../pages/FacebookCallbackPage';
 import FacebookPostPage from '../pages/FacebookPostPage';
 
@@ -100,14 +99,6 @@ export default function AppRouter() {
         />
 
         {/* Facebook */}
-        <Route
-          path="/facebook"
-          element={
-            <PrivateRoute>
-              <FacebookPage />
-            </PrivateRoute>
-          }
-        />
         <Route
           path="/facebook/post/:connectionId"
           element={

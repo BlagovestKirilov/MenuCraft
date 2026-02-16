@@ -105,7 +105,10 @@
     "phone": "Телефон",
     "city": "Град",
     "address": "Адрес",
-    "description": "Описание"
+    "description": "Описание",
+    "facebookConnections": "Фейсбук връзки",
+    "connectFacebook": "Свържи",
+    "noFacebookConnections": "Няма свързани Фейсбук страници."
   },
   "venueRegister": {
     "title": "Регистрация на заведение",
@@ -136,6 +139,9 @@
     "description": "Описание",
     "contentType": "Тип съдържание",
     "sections": "Секции",
+    "preview": "Преглед",
+    "viewPdf": "Виж PDF",
+    "pdfPreview": "Преглед на шаблон",
     "created": "Създаден"
   },
   "menuGenerator": {
@@ -216,7 +222,8 @@
     "submit": "Публикувай",
     "submitting": "Публикуване...",
     "success": "Публикацията е създадена! ID: {{postId}}",
-    "backToFacebook": "Назад към Фейсбук"
+    "backToFacebook": "Назад към Фейсбук",
+    "backToVenues": "Назад към заведения"
   },
   "facebookCallback": {
     "successTitle": "Фейсбук е свързан!",
@@ -224,6 +231,7 @@
     "successInfo": "Вашата Фейсбук страница вече е свързана. Можете да започнете да публикувате от секцията за Фейсбук.",
     "failTitle": "Неуспешно свързване",
     "failMessage": "Нещо се обърка при свързването с Фейсбук.",
-    "goToFacebook": "Към Фейсбук"
+    "goToFacebook": "Към Фейсбук",
+    "goToVenues": "Към заведения"
   }
 }

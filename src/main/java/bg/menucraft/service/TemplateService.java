@@ -6,6 +6,7 @@ import bg.menucraft.model.Venue;
 import bg.menucraft.model.dto.TemplateDto;
 import bg.menucraft.model.request.AddTemplateRequest;
 import bg.menucraft.model.response.ApiResponse;
+import bg.menucraft.model.response.TemplateResponse;
 import bg.menucraft.repository.TemplateRepository;
 import bg.menucraft.repository.VenueRepository;
 import bg.menucraft.util.TemplateMapper;
@@ -65,13 +66,15 @@ public class TemplateService {
         return ApiResponse.success();
     }
 
-    public List<TemplateDto> getTemplates(String venueName) {
+    public TemplateResponse getTemplates(String venueName) {
         Venue venue = venueRepository.findByName(venueName)
                 .orElseThrow(() -> new RuntimeException("Venue not found: " + venueName));
 
-        return venue.getTemplates().stream()
+        List<TemplateDto> templates = venue.getTemplates().stream()
                 .map(templateMapper::toDto)
                 .toList();
+
+        return new TemplateResponse(templates);
     }
 
     @Transactional(readOnly = true)

@@ -5,7 +5,7 @@ import FormField from '../components/FormField';
 import ErrorAlert from '../components/ErrorAlert';
 import SuccessAlert from '../components/SuccessAlert';
 import { generateMenu } from '../api/venueApi';
-import { getErrorMessage, downloadBlob } from '../utils/helpers';
+import { getErrorMessage, downloadBase64 } from '../utils/helpers';
 
 function MealListBuilder({ label, meals, onChange, maxCount, t }) {
   const canAdd = !maxCount || meals.length < maxCount;
@@ -115,8 +115,8 @@ export default function MenuGeneratorPage() {
         soups: filledSoups,
         mainCourses: filledMainCourses,
       };
-      const blob = await generateMenu(payload);
-      downloadBlob(blob, 'menu-filled.pdf');
+      const res = await generateMenu(payload);
+      downloadBase64(res.data, res.contentType || 'application/pdf', res.filename || 'menu-filled.pdf');
       setSuccess(t('menuGenerator.success'));
     } catch (err) {
       setError(getErrorMessage(err));

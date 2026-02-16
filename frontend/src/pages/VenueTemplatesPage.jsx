@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import useAuth from '../hooks/useAuth';
 import FormField from '../components/FormField';
 import ErrorAlert from '../components/ErrorAlert';
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -9,6 +10,7 @@ import { getErrorMessage } from '../utils/helpers';
 
 export default function VenueTemplatesPage() {
   const { t } = useTranslation();
+  const { isAdmin } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const didFetch = useRef(false);
@@ -20,6 +22,7 @@ export default function VenueTemplatesPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [searched, setSearched] = useState(false);
+  const [previewData, setPreviewData] = useState(null);
 
   const fetchTemplates = async (name) => {
     if (!name.trim()) return;
@@ -28,7 +31,7 @@ export default function VenueTemplatesPage() {
     setSearched(true);
     try {
       const data = await getTemplatesByVenue(name.trim());
-      setTemplates(data);
+      setTemplates(data.templates || []);
     } catch (err) {
       setError(getErrorMessage(err));
       setTemplates([]);
@@ -37,7 +40,6 @@ export default function VenueTemplatesPage() {
     }
   };
 
-  // Auto-load if venue name comes from URL query param (guard against StrictMode double-fire)
   useEffect(() => {
     if (initialVenue && !didFetch.current) {
       didFetch.current = true;
@@ -52,7 +54,6 @@ export default function VenueTemplatesPage() {
   };
 
   const handleTemplateClick = (tpl) => {
-    // Build section limits from template sections
     const sections = {};
     tpl.sections?.forEach((s) => {
       const key = s.type?.toLowerCase();
@@ -70,6 +71,15 @@ export default function VenueTemplatesPage() {
     navigate(`/menu/generate?${params.toString()}`);
   };
 
+  const handlePreview = (e, tpl) => {
+    e.stopPropagation();
+    if (tpl.data) {
+      setPreviewData(tpl.data);
+    }
+  };
+
+  const closePreview = () => setPreviewData(null);
+
   return (
     <div className="page-container">
       <div className="page-header">
@@ -77,20 +87,23 @@ export default function VenueTemplatesPage() {
         <p>{t('venueTemplates.subtitle')}</p>
       </div>
 
-      <div className="card" style={{ maxWidth: 900 }}>
-        <form onSubmit={handleSearch} className="flex gap-1 items-center mb-2">
-          <div style={{ flex: 1 }}>
-            <FormField
-              name="venueName"
-              value={venueName}
-              onChange={(_, v) => setVenueName(v)}
-              placeholder={t('venueTemplates.searchPlaceholder')}
-            />
-          </div>
-          <button type="submit" className="btn btn-primary" disabled={loading}>
-            {t('common.search')}
-          </button>
-        </form>
+      <div className="card" style={{ maxWidth: 960 }}>
+        {/* Search bar — only for admins */}
+        {isAdmin && (
+          <form onSubmit={handleSearch} className="flex gap-1 items-center mb-2">
+            <div style={{ flex: 1 }}>
+              <FormField
+                name="venueName"
+                value={venueName}
+                onChange={(_, v) => setVenueName(v)}
+                placeholder={t('venueTemplates.searchPlaceholder')}
+              />
+            </div>
+            <button type="submit" className="btn btn-primary" disabled={loading}>
+              {t('common.search')}
+            </button>
+          </form>
+        )}
 
         <ErrorAlert message={error} onClose={() => setError('')} />
 
@@ -111,8 +124,8 @@ export default function VenueTemplatesPage() {
                   <tr>
                     <th>{t('venueTemplates.name')}</th>
                     <th>{t('venueTemplates.description')}</th>
-                    <th>{t('venueTemplates.contentType')}</th>
                     <th>{t('venueTemplates.sections')}</th>
+                    <th>{t('venueTemplates.preview')}</th>
                     <th>{t('venueTemplates.created')}</th>
                   </tr>
                 </thead>
@@ -129,14 +142,23 @@ export default function VenueTemplatesPage() {
                       <td style={{ fontWeight: 600 }}>{tpl.name}</td>
                       <td>{tpl.description || '—'}</td>
                       <td>
-                        <span className="badge badge-info">{tpl.contentType || 'N/A'}</span>
-                      </td>
-                      <td>
                         {tpl.sections?.map((s, j) => (
                           <span key={j} className="badge badge-success" style={{ marginRight: 4 }}>
                             {s.type} ({s.slotCount})
                           </span>
                         ))}
+                      </td>
+                      <td>
+                        {tpl.data ? (
+                          <button
+                            className="btn btn-secondary btn-sm"
+                            onClick={(e) => handlePreview(e, tpl)}
+                          >
+                            {t('venueTemplates.viewPdf')}
+                          </button>
+                        ) : (
+                          <span className="text-secondary">—</span>
+                        )}
                       </td>
                       <td className="text-secondary" style={{ fontSize: '0.8125rem' }}>
                         {tpl.createdAt ? new Date(tpl.createdAt).toLocaleDateString() : '—'}
@@ -149,6 +171,23 @@ export default function VenueTemplatesPage() {
           </>
         )}
       </div>
+
+      {/* PDF Preview Modal */}
+      {previewData && (
+        <div className="modal-overlay" onClick={closePreview}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+              <h3>{t('venueTemplates.pdfPreview')}</h3>
+              <button className="btn btn-secondary btn-sm" onClick={closePreview}>&times;</button>
+            </div>
+            <iframe
+              src={`data:application/pdf;base64,${previewData}`}
+              title="PDF Preview"
+              style={{ width: '100%', height: '70vh', border: 'none', borderRadius: 'var(--radius)' }}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

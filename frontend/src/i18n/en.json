@@ -105,7 +105,10 @@
     "phone": "Phone",
     "city": "City",
     "address": "Address",
-    "description": "Description"
+    "description": "Description",
+    "facebookConnections": "Facebook Connections",
+    "connectFacebook": "Connect",
+    "noFacebookConnections": "No Facebook pages connected."
   },
   "venueRegister": {
     "title": "Register Venue",
@@ -136,6 +139,9 @@
     "description": "Description",
     "contentType": "Content Type",
     "sections": "Sections",
+    "preview": "Preview",
+    "viewPdf": "View PDF",
+    "pdfPreview": "Template Preview",
     "created": "Created"
   },
   "menuGenerator": {
@@ -216,7 +222,8 @@
     "submit": "Publish Post",
     "submitting": "Publishing...",
     "success": "Post published! ID: {{postId}}",
-    "backToFacebook": "Back to Facebook"
+    "backToFacebook": "Back to Facebook",
+    "backToVenues": "Back to Venues"
   },
   "facebookCallback": {
     "successTitle": "Facebook Connected!",
@@ -224,6 +231,7 @@
     "successInfo": "Your Facebook Page is now connected. You can start posting from the Facebook section.",
     "failTitle": "Connection Failed",
     "failMessage": "Something went wrong during the Facebook connection.",
-    "goToFacebook": "Go to Facebook"
+    "goToFacebook": "Go to Facebook",
+    "goToVenues": "Go to Venues"
   }
 }

@@ -23,6 +23,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Base64;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -34,7 +35,7 @@ public class FileGenerationService {
     private final GeneratedMenuService generatedMenuService;
 
     @SneakyThrows
-    public byte[] generateMenu(MenuGenerationRequest menuGenerationRequest) {
+    public String generateMenu(MenuGenerationRequest menuGenerationRequest) {
         // Load template from database by name
         Template template = templateRepository.findByName(menuGenerationRequest.getTemplateName())
                 .orElseThrow(() -> new RuntimeException("Template not found: " + menuGenerationRequest.getTemplateName()));
@@ -103,7 +104,7 @@ public class FileGenerationService {
 
             generatedMenuService.saveMenuGeneration(menuGenerationRequest);
 
-            return baos.toByteArray();
+            return Base64.getEncoder().encodeToString(baos.toByteArray());
         }
     }
 

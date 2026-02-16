@@ -44,3 +44,17 @@ export function downloadBlob(blob, filename) {
   a.remove();
   URL.revokeObjectURL(url);
 }
+
+/**
+ * Trigger a file download from a base64 string.
+ */
+export function downloadBase64(base64Data, contentType, filename) {
+  const byteCharacters = atob(base64Data);
+  const byteNumbers = new Array(byteCharacters.length);
+  for (let i = 0; i < byteCharacters.length; i++) {
+    byteNumbers[i] = byteCharacters.charCodeAt(i);
+  }
+  const byteArray = new Uint8Array(byteNumbers);
+  const blob = new Blob([byteArray], { type: contentType });
+  downloadBlob(blob, filename);
+}

@@ -17,19 +17,17 @@ export const registerVenue = (data) =>
 
 /**
  * POST /venue/menu
- * Generates a PDF menu from template + meals.
+ * Generates a PDF menu and returns base64 in a MenuResponse.
  * @param {Object} data - MenuGenerationRequest
- * @returns {Promise<Blob>}
+ * @returns {Promise<{ status, data, contentType, filename }>}
  */
 export const generateMenu = (data) =>
-  client
-    .post('/venue/menu', data, { responseType: 'blob' })
-    .then((r) => r.data);
+  client.post('/venue/menu', data).then((r) => r.data);
 
 /**
  * GET /venue/template?venueName=...
  * @param {string} venueName
- * @returns {Promise<Array<TemplateDto>>}
+ * @returns {Promise<{ templates: Array<TemplateDto> }>}
  */
 export const getTemplatesByVenue = (venueName) =>
   client.get('/venue/template', { params: { venueName } }).then((r) => r.data);

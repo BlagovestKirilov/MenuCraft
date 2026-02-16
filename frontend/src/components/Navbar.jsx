@@ -19,9 +19,12 @@ export default function Navbar() {
             <>
               <NavLink to="/dashboard">{t('nav.dashboard')}</NavLink>
               <NavLink to="/venues">{t('nav.venues')}</NavLink>
-              <NavLink to="/venue/templates">{t('nav.templates')}</NavLink>
-              <NavLink to="/menu/generate">{t('nav.menu')}</NavLink>
-              <NavLink to="/facebook">{t('nav.facebook')}</NavLink>
+              {isAdmin && (
+                <>
+                  <NavLink to="/venue/templates">{t('nav.templates')}</NavLink>
+                  <NavLink to="/menu/generate">{t('nav.menu')}</NavLink>
+                </>
+              )}
               {isAdmin && <NavLink to="/admin/template">{t('nav.admin')}</NavLink>}
               <span className="text-secondary" style={{ fontSize: '0.8rem', padding: '0 0.5rem' }}>
                 {role}
