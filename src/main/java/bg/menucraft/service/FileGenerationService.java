@@ -38,8 +38,29 @@ public class FileGenerationService {
     private final TemplateRepository templateRepository;
     private final GeneratedMenuService generatedMenuService;
 
+    /**
+     * Generates a PDF menu and saves a history record.
+     */
     @SneakyThrows
     public MenuResponse generateMenu(MenuGenerationRequest menuGenerationRequest) {
+        MenuResponse response = buildMenu(menuGenerationRequest);
+        generatedMenuService.saveMenuGeneration(menuGenerationRequest);
+        return response;
+    }
+
+    /**
+     * Regenerates a PDF menu without saving a new history record.
+     */
+    @SneakyThrows
+    public MenuResponse regenerateMenu(MenuGenerationRequest menuGenerationRequest) {
+        return buildMenu(menuGenerationRequest);
+    }
+
+    /**
+     * Core PDF generation logic — builds the filled PDF and renders a preview image.
+     */
+    @SneakyThrows
+    private MenuResponse buildMenu(MenuGenerationRequest menuGenerationRequest) {
         Template template = templateRepository.findByName(menuGenerationRequest.getTemplateName())
                 .orElseThrow(() -> new RuntimeException("Template not found: " + menuGenerationRequest.getTemplateName()));
 
@@ -89,24 +110,21 @@ public class FileGenerationService {
             fillMeals(acroForm, "soup", "soupPrice", menuGenerationRequest.getSoups());
             fillMeals(acroForm, "meal", "mealPrice", menuGenerationRequest.getMainCourses());
 
-            acroForm.setNeedAppearances(true);
+            acroForm.refreshAppearances();
             acroForm.flatten();
             document.save(baos);
 
-            generatedMenuService.saveMenuGeneration(menuGenerationRequest);
-
             byte[] pdfBytes = baos.toByteArray();
+            byte[] previewImageBytes = renderFirstPageAsImage(pdfBytes);
+
             String pdfBase64 = Base64.getEncoder().encodeToString(pdfBytes);
-            String previewImage = renderFirstPageAsImage(pdfBytes);
+            String previewImage = previewImageBytes != null ? Base64.getEncoder().encodeToString(previewImageBytes) : null;
 
             return MenuResponse.success(pdfBase64, "application/pdf", "menu-filled.pdf", previewImage);
         }
     }
 
-    /**
-     * Renders the first page of a PDF as a PNG image and returns it as a base64 string.
-     */
-    private String renderFirstPageAsImage(byte[] pdfBytes) {
+    private byte[] renderFirstPageAsImage(byte[] pdfBytes) {
         try (InputStream is = new ByteArrayInputStream(pdfBytes);
              PDDocument doc = Loader.loadPDF(new RandomAccessReadBuffer(is));
              ByteArrayOutputStream imgOut = new ByteArrayOutputStream()) {
@@ -114,7 +132,7 @@ public class FileGenerationService {
             PDFRenderer renderer = new PDFRenderer(doc);
             BufferedImage image = renderer.renderImageWithDPI(0, 150);
             ImageIO.write(image, "png", imgOut);
-            return Base64.getEncoder().encodeToString(imgOut.toByteArray());
+            return imgOut.toByteArray();
 
         } catch (IOException e) {
             return null;

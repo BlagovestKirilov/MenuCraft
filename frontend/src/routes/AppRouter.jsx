@@ -12,6 +12,7 @@ import VenuesPage from '../pages/VenuesPage';
 import VenueRegisterPage from '../pages/VenueRegisterPage';
 import VenueTemplatesPage from '../pages/VenueTemplatesPage';
 import MenuGeneratorPage from '../pages/MenuGeneratorPage';
+import HistoryPage from '../pages/HistoryPage';
 
 // Admin pages
 import AdminTemplatePage from '../pages/AdminTemplatePage';
@@ -76,6 +77,16 @@ export default function AppRouter() {
           element={
             <PrivateRoute>
               <MenuGeneratorPage />
+            </PrivateRoute>
+          }
+        />
+
+        {/* History */}
+        <Route
+          path="/history"
+          element={
+            <PrivateRoute>
+              <HistoryPage />
             </PrivateRoute>
           }
         />

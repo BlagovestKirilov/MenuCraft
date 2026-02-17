@@ -15,7 +15,8 @@ import java.util.List;
 public interface GeneratedMenuMapper {
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "template", ignore = true) // we set it manually
+    @Mapping(target = "template", ignore = true)
+    @Mapping(target = "account", ignore = true)
     @Mapping(target = "meals", expression = "java(mapMeals(request))")
     GeneratedMenu toEntity(MenuGenerationRequest request);
 

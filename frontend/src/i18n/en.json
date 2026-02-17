@@ -23,6 +23,7 @@
   "nav": {
     "dashboard": "Dashboard",
     "venues": "Venues",
+    "history": "History",
     "templates": "Templates",
     "menu": "Menu",
     "facebook": "Facebook",
@@ -76,6 +77,10 @@
       "menu": {
         "title": "Generate Menu",
         "description": "Create a PDF menu from a template and meals."
+      },
+      "history": {
+        "title": "Menu History",
+        "description": "View your previously generated menus."
       },
       "facebook": {
         "title": "Facebook Integration",
@@ -171,6 +176,13 @@
     "postSuccess": "Posted to Facebook! Post ID: {{postId}}",
     "limitsInfo": "Template limits — Salads: {{salads}}, Soups: {{soups}}, Main Courses: {{mainCourses}}",
     "limitError": "{{section}} cannot exceed {{max}} items."
+  },
+  "history": {
+    "title": "Menu History",
+    "subtitle": "Previously generated menus.",
+    "noMenus": "No generated menus yet.",
+    "templateName": "Template",
+    "createdAt": "Created"
   },
   "adminTemplate": {
     "title": "Add Template",

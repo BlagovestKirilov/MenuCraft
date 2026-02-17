@@ -13,6 +13,12 @@ export default function DashboardPage() {
       link: '/venues',
       icon: '🏪',
     },
+    {
+      titleKey: 'dashboard.cards.history.title',
+      descKey: 'dashboard.cards.history.description',
+      link: '/history',
+      icon: '📋',
+    },
   ];
 
   const ADMIN_ONLY_CARDS = [

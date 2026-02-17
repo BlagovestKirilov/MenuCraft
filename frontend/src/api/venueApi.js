@@ -31,3 +31,20 @@ export const generateMenu = (data) =>
  */
 export const getTemplatesByVenue = (venueName) =>
   client.get('/venue/template', { params: { venueName } }).then((r) => r.data);
+
+/**
+ * GET /venue/history
+ * Returns list of generated menus for the authenticated user.
+ * @returns {Promise<{ menus: Array<{ id, templateName, createdAt }> }>}
+ */
+export const getHistory = () =>
+  client.get('/venue/history').then((r) => r.data);
+
+/**
+ * GET /venue/history/:menuId
+ * Returns full detail (PDF + preview image) for a generated menu.
+ * @param {string} menuId
+ * @returns {Promise<{ status, data, contentType, filename, previewImage }>}
+ */
+export const getMenuDetail = (menuId) =>
+  client.get(`/venue/history/${menuId}`).then((r) => r.data);

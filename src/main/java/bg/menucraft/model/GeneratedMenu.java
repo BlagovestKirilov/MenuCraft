@@ -19,6 +19,10 @@ public class GeneratedMenu extends BaseEntity {
     @JoinColumn(name = "template_id", nullable = false)
     private Template template;
 
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "account_id", nullable = false)
+    private Account account;
+
     @OneToMany(mappedBy = "generatedMenu",
             cascade = CascadeType.ALL,
             orphanRemoval = true)

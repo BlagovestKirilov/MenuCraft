@@ -4,7 +4,7 @@ import useAuth from '../hooks/useAuth';
 import LanguageSwitcher from './LanguageSwitcher';
 
 export default function Navbar() {
-  const { isAuthenticated, isAdmin, logout, role } = useAuth();
+  const { isAuthenticated, isAdmin, logout } = useAuth();
   const { t } = useTranslation();
 
   return (
@@ -19,6 +19,7 @@ export default function Navbar() {
             <>
               <NavLink to="/dashboard">{t('nav.dashboard')}</NavLink>
               <NavLink to="/venues">{t('nav.venues')}</NavLink>
+              <NavLink to="/history">{t('nav.history')}</NavLink>
               {isAdmin && (
                 <>
                   <NavLink to="/venue/templates">{t('nav.templates')}</NavLink>
@@ -26,9 +27,6 @@ export default function Navbar() {
                 </>
               )}
               {isAdmin && <NavLink to="/admin/template">{t('nav.admin')}</NavLink>}
-              <span className="text-secondary" style={{ fontSize: '0.8rem', padding: '0 0.5rem' }}>
-                {role}
-              </span>
               <LanguageSwitcher />
               <button onClick={logout}>{t('common.logout')}</button>
             </>
