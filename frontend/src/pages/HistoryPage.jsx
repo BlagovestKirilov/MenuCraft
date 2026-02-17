@@ -162,7 +162,14 @@ export default function HistoryPage() {
                   >
                     <td style={{ fontWeight: 600 }}>{m.templateName}</td>
                     <td className="text-secondary">
-                      {new Date(m.createdAt).toLocaleString()}
+                      {new Date(m.createdAt).toLocaleString('bg-BG', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: false
+                      })}
                     </td>
                   </tr>
                 ))}
