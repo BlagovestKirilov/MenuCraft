@@ -32,6 +32,19 @@ export default function HistoryPage() {
   const [postError, setPostError] = useState('');
   const [postSuccess, setPostSuccess] = useState('');
 
+  const formatDateTime = (value) => {
+    const date = new Date(value);
+
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+
+    const hours = date.getHours();
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+
+    return `${day}.${month}.${year}, ${hours}:${minutes}`;
+  };
+
   useEffect(() => {
     if (didFetch.current) return;
     didFetch.current = true;
@@ -162,14 +175,7 @@ export default function HistoryPage() {
                   >
                     <td style={{ fontWeight: 600 }}>{m.templateName}</td>
                     <td className="text-secondary">
-                      {new Date(m.createdAt).toLocaleString('bg-BG', {
-                        day: '2-digit',
-                        month: '2-digit',
-                        year: 'numeric',
-                        hour: 'numeric',
-                        minute: '2-digit',
-                        hour12: false
-                      })}
+                      {formatDateTime(m.createdAt)}
                     </td>
                   </tr>
                 ))}
