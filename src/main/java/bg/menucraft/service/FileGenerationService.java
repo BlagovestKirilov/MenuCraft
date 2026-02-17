@@ -3,6 +3,7 @@ package bg.menucraft.service;
 import bg.menucraft.model.Template;
 import bg.menucraft.model.dto.MealDto;
 import bg.menucraft.model.request.MenuGenerationRequest;
+import bg.menucraft.model.response.MenuResponse;
 import bg.menucraft.repository.TemplateRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -16,9 +17,12 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 import org.apache.pdfbox.pdmodel.interactive.form.PDTextField;
+import org.apache.pdfbox.rendering.PDFRenderer;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -35,8 +39,7 @@ public class FileGenerationService {
     private final GeneratedMenuService generatedMenuService;
 
     @SneakyThrows
-    public String generateMenu(MenuGenerationRequest menuGenerationRequest) {
-        // Load template from database by name
+    public MenuResponse generateMenu(MenuGenerationRequest menuGenerationRequest) {
         Template template = templateRepository.findByName(menuGenerationRequest.getTemplateName())
                 .orElseThrow(() -> new RuntimeException("Template not found: " + menuGenerationRequest.getTemplateName()));
 
@@ -58,12 +61,8 @@ public class FileGenerationService {
             PDAcroForm acroForm = document.getDocumentCatalog().getAcroForm();
             if (acroForm == null) throw new IllegalStateException("PDF has no AcroForm");
 
-            // 1️⃣ Load font with full embed (no subset) - required for AcroForm appearance regeneration and Cyrillic
             PDType0Font unicodeFont = PDType0Font.load(document, fontIs, false);
 
-            // 2️⃣ Add font to form default resources and get the name PDFBox will use (e.g. "F1")
-            // Using add() embeds the font and returns the resource name; put("ArialMT", ...) does not
-            // resolve correctly when PDFBox regenerates appearances, causing "font isn't embedded" and wrong glyphs
             PDResources resources = acroForm.getDefaultResources();
             if (resources == null) {
                 resources = new PDResources();
@@ -71,14 +70,11 @@ public class FileGenerationService {
             }
             COSName fontResourceName = resources.add(unicodeFont);
 
-            // 3️⃣ Set default appearance using the font name from add() so content stream uses embedded font (bigger, bold)
             String daString = "/" + fontResourceName.getName() + " " + FONT_SIZE + " Tf 0 g";
             acroForm.setDefaultAppearance(daString);
 
-            // 4️⃣ Fix fields BEFORE filling data
             for (PDField field : acroForm.getFieldTree()) {
                 if (field instanceof PDTextField) {
-                    // Remove existing appearance streams to force regeneration
                     field.getCOSObject().removeItem(COSName.AP);
                     field.getCOSObject().setString(COSName.DA, daString);
 
@@ -89,22 +85,39 @@ public class FileGenerationService {
                 }
             }
 
-            // 5️⃣ Fill Data (Cyrillic)
             fillMeals(acroForm, "salad", "saladPrice", menuGenerationRequest.getSalads());
             fillMeals(acroForm, "soup", "soupPrice", menuGenerationRequest.getSoups());
             fillMeals(acroForm, "meal", "mealPrice", menuGenerationRequest.getMainCourses());
 
-            // 6️⃣ REFRESH Appearances before flattening
-            // This is the step that actually uses the font to draw the Cyrillic text
             acroForm.setNeedAppearances(true);
-
-            // 7️⃣ Flatten
             acroForm.flatten();
             document.save(baos);
 
             generatedMenuService.saveMenuGeneration(menuGenerationRequest);
 
-            return Base64.getEncoder().encodeToString(baos.toByteArray());
+            byte[] pdfBytes = baos.toByteArray();
+            String pdfBase64 = Base64.getEncoder().encodeToString(pdfBytes);
+            String previewImage = renderFirstPageAsImage(pdfBytes);
+
+            return MenuResponse.success(pdfBase64, "application/pdf", "menu-filled.pdf", previewImage);
+        }
+    }
+
+    /**
+     * Renders the first page of a PDF as a PNG image and returns it as a base64 string.
+     */
+    private String renderFirstPageAsImage(byte[] pdfBytes) {
+        try (InputStream is = new ByteArrayInputStream(pdfBytes);
+             PDDocument doc = Loader.loadPDF(new RandomAccessReadBuffer(is));
+             ByteArrayOutputStream imgOut = new ByteArrayOutputStream()) {
+
+            PDFRenderer renderer = new PDFRenderer(doc);
+            BufferedImage image = renderer.renderImageWithDPI(0, 150);
+            ImageIO.write(image, "png", imgOut);
+            return Base64.getEncoder().encodeToString(imgOut.toByteArray());
+
+        } catch (IOException e) {
+            return null;
         }
     }
 

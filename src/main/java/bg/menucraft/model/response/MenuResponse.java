@@ -7,9 +7,10 @@ public record MenuResponse(
         String status,
         String data,
         String contentType,
-        String filename
+        String filename,
+        String previewImage
 ) {
-    public static MenuResponse success(String base64Data, String contentType, String filename) {
-        return new MenuResponse("SUCCESS", base64Data, contentType, filename);
+    public static MenuResponse success(String base64Data, String contentType, String filename, String previewImage) {
+        return new MenuResponse("SUCCESS", base64Data, contentType, filename, previewImage);
     }
 }

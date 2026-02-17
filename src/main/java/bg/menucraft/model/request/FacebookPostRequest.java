@@ -10,7 +10,7 @@ import java.util.UUID;
 
 /**
  * Request body for posting to a Facebook Page.
- * Provide either text only, or text + photoUrl.
+ * Provide text only, text + photoUrl, or text + base64Photo.
  */
 @Getter
 @Setter
@@ -33,4 +33,10 @@ public class FacebookPostRequest {
      * Optional: a publicly accessible image URL for photo posts.
      */
     private String photoUrl;
+
+    /**
+     * Optional: base64-encoded image data (PNG/JPEG) for direct photo upload.
+     * Takes precedence over photoUrl if both are provided.
+     */
+    private String base64Photo;
 }

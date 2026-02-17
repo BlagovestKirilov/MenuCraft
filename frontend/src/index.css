@@ -190,6 +190,13 @@ select.form-control {
   color: var(--color-text);
   border: 1px solid var(--color-border);
 }
+.btn-facebook {
+  background: #1877f2;
+  color: white;
+}
+.btn-facebook:hover:not(:disabled) {
+  background: #166fe5;
+}
 .btn-secondary:hover:not(:disabled) {
   background: var(--color-border);
 }

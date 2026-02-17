@@ -64,6 +64,7 @@ export default function VenueTemplatesPage() {
 
     const params = new URLSearchParams();
     params.set('template', tpl.name);
+    if (venueName) params.set('venue', venueName);
     if (sections.salads) params.set('salads', sections.salads);
     if (sections.soups) params.set('soups', sections.soups);
     if (sections.mainCourses) params.set('mainCourses', sections.mainCourses);

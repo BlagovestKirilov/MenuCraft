@@ -39,10 +39,7 @@ public class VenueController {
 
     @PostMapping("/menu")
     public ResponseEntity<MenuResponse> generateMenu(@Valid @RequestBody MenuGenerationRequest menuGenerationRequest) {
-        return ResponseEntity.ok(MenuResponse.success(
-                fileGenerationService.generateMenu(menuGenerationRequest),
-                "application/pdf",
-                "menu-filled.pdf"));
+        return ResponseEntity.ok(fileGenerationService.generateMenu(menuGenerationRequest));
     }
 
     @GetMapping("/template")
