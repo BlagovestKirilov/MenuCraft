@@ -152,6 +152,8 @@
   "menuGenerator": {
     "title": "Генериране на меню",
     "subtitle": "Попълнете данни за ястията и генерирайте PDF меню от шаблон.",
+    "venueName": "Име на заведение",
+    "venueNamePlaceholder": "Въведете име на заведение",
     "templateName": "Име на шаблон",
     "templateNamePlaceholder": "Въведете име на шаблон",
     "saladsLabel": "Салати",
@@ -181,6 +183,7 @@
     "title": "История на менюта",
     "subtitle": "Предишни генерирани менюта.",
     "noMenus": "Все още няма генерирани менюта.",
+    "venueName": "Заведение",
     "templateName": "Шаблон",
     "createdAt": "Създадено"
   },

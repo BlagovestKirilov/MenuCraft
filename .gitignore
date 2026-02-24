@@ -34,3 +34,5 @@ build/
 
 ### Node modules ###
 /frontend/node_modules
+
+/src/main/resources/mds

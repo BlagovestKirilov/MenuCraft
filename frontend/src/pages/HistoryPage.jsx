@@ -159,6 +159,7 @@ export default function HistoryPage() {
             <table>
               <thead>
                 <tr>
+                  <th>{t('history.venueName')}</th>
                   <th>{t('history.templateName')}</th>
                   <th>{t('history.createdAt')}</th>
                 </tr>
@@ -173,10 +174,9 @@ export default function HistoryPage() {
                     tabIndex={0}
                     onKeyDown={(e) => e.key === 'Enter' && handleMenuClick(m)}
                   >
-                    <td style={{ fontWeight: 600 }}>{m.templateName}</td>
-                    <td className="text-secondary">
-                      {formatDateTime(m.createdAt)}
-                    </td>
+                    <td>{m.venueName}</td>
+                    <td>{m.templateName}</td>
+                    <td>{formatDateTime(m.createdAt)}</td>
                   </tr>
                 ))}
               </tbody>

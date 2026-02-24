@@ -23,6 +23,10 @@ public class GeneratedMenu extends BaseEntity {
     @JoinColumn(name = "account_id", nullable = false)
     private Account account;
 
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "venue_id", nullable = false)
+    private Venue venue;
+
     @OneToMany(mappedBy = "generatedMenu",
             cascade = CascadeType.ALL,
             orphanRemoval = true)

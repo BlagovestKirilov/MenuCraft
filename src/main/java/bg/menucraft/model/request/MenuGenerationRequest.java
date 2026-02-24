@@ -34,4 +34,9 @@ public class MenuGenerationRequest {
     @Size(min = 1, max = 30, message = ValidationConstants.MAIN_COURSES_SIZE)
     @Valid
     private List<MealDto> mainCourses;
+
+    @NotBlank(message = ValidationConstants.VENUE_NAME_EMPTY)
+    @Size(min = ValidationConstants.VENUE_NAME_MIN, max = ValidationConstants.VENUE_NAME_MAX,
+            message = ValidationConstants.VENUE_NAME_SIZE)
+    private String venueName;
 }

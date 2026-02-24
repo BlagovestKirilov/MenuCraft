@@ -152,6 +152,8 @@
   "menuGenerator": {
     "title": "Generate Menu",
     "subtitle": "Fill in meal data and generate a PDF menu from a template.",
+    "venueName": "Venue Name",
+    "venueNamePlaceholder": "Enter venue name",
     "templateName": "Template Name",
     "templateNamePlaceholder": "Enter template name",
     "saladsLabel": "Salads",
@@ -181,6 +183,7 @@
     "title": "Menu History",
     "subtitle": "Previously generated menus.",
     "noMenus": "No generated menus yet.",
+    "venueName": "Venue",
     "templateName": "Template",
     "createdAt": "Created"
   },

@@ -73,6 +73,7 @@ export default function MenuGeneratorPage() {
 
   const hasLimits = maxSalads > 0 || maxSoups > 0 || maxMainCourses > 0;
 
+  const [venueName, setVenueName] = useState(initialVenue);
   const [templateName, setTemplateName] = useState(initialTemplate);
   const [salads, setSalads] = useState([{ name: '', price: '' }]);
   const [soups, setSoups] = useState([{ name: '', price: '' }]);
@@ -150,6 +151,7 @@ export default function MenuGeneratorPage() {
     try {
       const payload = {
         templateName,
+        venueName,
         salads: filledSalads,
         soups: filledSoups,
         mainCourses: filledMainCourses,
@@ -233,6 +235,16 @@ export default function MenuGeneratorPage() {
         )}
 
         <form onSubmit={handleSubmit}>
+          <FormField
+            label={t('menuGenerator.venueName')}
+            name="venueName"
+            value={venueName}
+            onChange={(_, v) => setVenueName(v)}
+            placeholder={t('menuGenerator.venueNamePlaceholder')}
+            required
+            readOnly={!!initialVenue}
+          />
+
           <FormField
             label={t('menuGenerator.templateName')}
             name="templateName"
