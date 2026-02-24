@@ -1,7 +1,12 @@
 package bg.menucraft.service;
 
 import bg.menucraft.config.FacebookProperties;
+import bg.menucraft.constant.Constants;
+import bg.menucraft.constant.ExceptionConstants;
+import bg.menucraft.constant.LoggingConstants;
 import bg.menucraft.enums.FacebookConnectionStatus;
+import bg.menucraft.exception.FacebookApiException;
+import bg.menucraft.exception.ResourceNotFoundException;
 import bg.menucraft.model.FacebookConnection;
 import bg.menucraft.model.Venue;
 import bg.menucraft.model.dto.FacebookPageDto;
@@ -10,7 +15,7 @@ import bg.menucraft.repository.FacebookConnectionRepository;
 import bg.menucraft.repository.VenueRepository;
 import bg.menucraft.security.TokenEncryptionService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +29,6 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -33,7 +37,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * 2. Handle the callback: exchange code → short-lived token → long-lived token → fetch Pages.
  * 3. Persist encrypted Page tokens as FacebookConnection entities.
  */
-@Slf4j
+@Log4j2
 @RequiredArgsConstructor
 @Service
 public class FacebookOAuthService {
@@ -89,11 +93,13 @@ public class FacebookOAuthService {
         // Validate CSRF state
         String venueName = stateStore.remove(state);
         if (venueName == null) {
-            return FacebookOAuthResponse.error("Invalid or expired OAuth state. Please restart the connection.");
+            log.warn(LoggingConstants.FACEBOOK_OAUTH_INVALID_STATE);
+            return FacebookOAuthResponse.error(ExceptionConstants.FACEBOOK_INVALID_OAUTH_STATE);
         }
 
         Venue venue = venueRepository.findByName(venueName)
-                .orElseThrow(() -> new RuntimeException("Venue not found: " + venueName));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        String.format(ExceptionConstants.VENUE_NOT_FOUND, venueName)));
 
         // Step 1: Exchange authorization code for short-lived user access token
         String shortLivedToken = exchangeCodeForToken(code);
@@ -104,7 +110,7 @@ public class FacebookOAuthService {
         // Step 3: Fetch user's Facebook Pages
         List<FacebookPageDto> pages = fetchAndStorePages(venue, longLivedToken);
 
-        log.info("Facebook OAuth completed for venue '{}': {} page(s) connected", venue.getName(), pages.size());
+        log.info(LoggingConstants.FACEBOOK_OAUTH_COMPLETED, venue.getName(), pages.size());
         return FacebookOAuthResponse.success(pages);
     }
 
@@ -127,10 +133,10 @@ public class FacebookOAuthService {
                 .retrieve()
                 .body(Map.class);
 
-        if (response == null || !response.containsKey("access_token")) {
-            throw new RuntimeException("Facebook did not return an access token during code exchange");
+        if (response == null || !response.containsKey(Constants.ACCESS_TOKEN)) {
+            throw new FacebookApiException(ExceptionConstants.FACEBOOK_NO_ACCESS_TOKEN);
         }
-        return response.get("access_token").toString();
+        return response.get(Constants.ACCESS_TOKEN).toString();
     }
 
     /**
@@ -150,10 +156,10 @@ public class FacebookOAuthService {
                 .retrieve()
                 .body(Map.class);
 
-        if (response == null || !response.containsKey("access_token")) {
-            throw new RuntimeException("Facebook did not return a long-lived token");
+        if (response == null || !response.containsKey(Constants.ACCESS_TOKEN)) {
+            throw new FacebookApiException(ExceptionConstants.FACEBOOK_NO_LONG_LIVED_TOKEN);
         }
-        return response.get("access_token").toString();
+        return response.get(Constants.ACCESS_TOKEN).toString();
     }
 
     // ───────────────────── Fetch & Store Pages ─────────────────────
@@ -174,7 +180,7 @@ public class FacebookOAuthService {
                 .body(Map.class);
 
         if (response == null || !response.containsKey("data")) {
-            throw new RuntimeException("Facebook did not return page data from /me/accounts");
+            throw new FacebookApiException(ExceptionConstants.FACEBOOK_NO_PAGE_DATA);
         }
 
         List<FacebookPageDto> result = new ArrayList<>();
@@ -183,7 +189,7 @@ public class FacebookOAuthService {
         for (Map<String, Object> pageNode : pages) {
             String pageId = pageNode.get("id").toString();
             String pageName = pageNode.get("name").toString();
-            String pageAccessToken = pageNode.get("access_token").toString();
+            String pageAccessToken = pageNode.get(Constants.ACCESS_TOKEN).toString();
 
             // Upsert: update if already exists, create otherwise
             FacebookConnection connection = facebookConnectionRepository

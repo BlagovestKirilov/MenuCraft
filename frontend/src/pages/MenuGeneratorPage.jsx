@@ -242,7 +242,7 @@ export default function MenuGeneratorPage() {
             onChange={(_, v) => setVenueName(v)}
             placeholder={t('menuGenerator.venueNamePlaceholder')}
             required
-            readOnly={!!initialVenue}
+            readOnly
           />
 
           <FormField
@@ -252,7 +252,7 @@ export default function MenuGeneratorPage() {
             onChange={(_, v) => setTemplateName(v)}
             placeholder={t('menuGenerator.templateNamePlaceholder')}
             required
-            readOnly={!!initialTemplate}
+            readOnly
           />
 
           <MealListBuilder

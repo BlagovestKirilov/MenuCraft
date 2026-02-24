@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import FormField from '../components/FormField';
-import TagInput from '../components/TagInput';
 import ErrorAlert from '../components/ErrorAlert';
 import SuccessAlert from '../components/SuccessAlert';
 import { registerVenue } from '../api/venueApi';
+import { getCompanyAccounts } from '../api/adminApi';
 import { getErrorMessage } from '../utils/helpers';
 
 const INITIAL = {
@@ -18,11 +18,26 @@ const INITIAL = {
 
 export default function VenueRegisterPage() {
   const { t } = useTranslation();
+  const didFetch = useRef(false);
   const [form, setForm] = useState(INITIAL);
-  const [usernames, setUsernames] = useState([]);
+  const [accounts, setAccounts] = useState([]);
+  const [selectedAccount, setSelectedAccount] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+
+  useEffect(() => {
+    if (didFetch.current) return;
+    didFetch.current = true;
+    const load = async () => {
+      try {
+        const list = await getCompanyAccounts();
+        setAccounts(list || []);
+        if (list && list.length > 0) setSelectedAccount(list[0]);
+      } catch { /* non-critical */ }
+    };
+    load();
+  }, []);
 
   const handleChange = (name, value) => setForm((f) => ({ ...f, [name]: value }));
 
@@ -30,13 +45,17 @@ export default function VenueRegisterPage() {
     e.preventDefault();
     setError('');
     setSuccess('');
+    if (!selectedAccount) {
+      setError(t('venueRegister.accountRequired'));
+      return;
+    }
     setLoading(true);
     try {
-      const payload = { ...form, accountUsernames: usernames };
+      const payload = { ...form, accountUsernames: [selectedAccount] };
       await registerVenue(payload);
       setSuccess(t('venueRegister.success'));
       setForm(INITIAL);
-      setUsernames([]);
+      if (accounts.length > 0) setSelectedAccount(accounts[0]);
     } catch (err) {
       setError(getErrorMessage(err));
     } finally {
@@ -70,12 +89,14 @@ export default function VenueRegisterPage() {
 
           <FormField label={t('venueRegister.description')} name="description" type="textarea" value={form.description} onChange={handleChange} placeholder={t('venueRegister.descriptionPlaceholder')} />
 
-          <TagInput
-            label={t('venueRegister.accountUsernames')}
-            tags={usernames}
-            onChange={setUsernames}
-            placeholder={t('venueRegister.accountUsernamesPlaceholder')}
-          />
+          <div className="form-group">
+            <label>{t('venueRegister.accountLabel')} *</label>
+            <select className="form-control" value={selectedAccount} onChange={(e) => setSelectedAccount(e.target.value)} required>
+              {accounts.map((u) => (
+                <option key={u} value={u}>{u}</option>
+              ))}
+            </select>
+          </div>
 
           <button type="submit" className="btn btn-primary btn-lg btn-block mt-2" disabled={loading}>
             {loading ? t('venueRegister.submitting') : t('venueRegister.submit')}

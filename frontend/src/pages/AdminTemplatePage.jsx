@@ -1,15 +1,16 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import FormField from '../components/FormField';
 import FileUpload from '../components/FileUpload';
-import TagInput from '../components/TagInput';
 import ErrorAlert from '../components/ErrorAlert';
 import SuccessAlert from '../components/SuccessAlert';
 import { addTemplate } from '../api/adminApi';
+import { getVenues } from '../api/venueApi';
 import { getErrorMessage, fileToBase64 } from '../utils/helpers';
 
 export default function AdminTemplatePage() {
   const { t } = useTranslation();
+  const didFetch = useRef(false);
 
   const SECTION_TYPES = [
     { value: 'SOUP', label: t('adminTemplate.sectionSoup') },
@@ -21,10 +22,25 @@ export default function AdminTemplatePage() {
   const [form, setForm] = useState({ name: '', description: '', contentType: 'application/pdf' });
   const [fileBase64, setFileBase64] = useState('');
   const [sections, setSections] = useState([{ type: 'SALAD', slotCount: '' }]);
-  const [venueNames, setVenueNames] = useState([]);
+  const [venues, setVenues] = useState([]);
+  const [selectedVenue, setSelectedVenue] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+
+  useEffect(() => {
+    if (didFetch.current) return;
+    didFetch.current = true;
+    const loadVenues = async () => {
+      try {
+        const data = await getVenues();
+        const list = data.venues || [];
+        setVenues(list);
+        if (list.length > 0) setSelectedVenue(list[0].name);
+      } catch { /* non-critical */ }
+    };
+    loadVenues();
+  }, []);
 
   const handleChange = (name, value) => setForm((f) => ({ ...f, [name]: value }));
 
@@ -49,6 +65,10 @@ export default function AdminTemplatePage() {
       setError(t('adminTemplate.fileRequired'));
       return;
     }
+    if (!selectedVenue) {
+      setError(t('adminTemplate.venueRequired'));
+      return;
+    }
     setLoading(true);
     try {
       const payload = {
@@ -58,14 +78,14 @@ export default function AdminTemplatePage() {
           type: s.type,
           slotCount: parseInt(s.slotCount, 10),
         })),
-        venueNames,
+        venueNames: [selectedVenue],
       };
       await addTemplate(payload);
       setSuccess(t('adminTemplate.success'));
       setForm({ name: '', description: '', contentType: 'application/pdf' });
       setFileBase64('');
       setSections([{ type: 'SALAD', slotCount: '' }]);
-      setVenueNames([]);
+      if (venues.length > 0) setSelectedVenue(venues[0].name);
     } catch (err) {
       setError(getErrorMessage(err));
     } finally {
@@ -101,14 +121,6 @@ export default function AdminTemplatePage() {
             onChange={handleChange}
             placeholder={t('adminTemplate.descriptionPlaceholder')}
           />
-          <FormField
-            label={t('adminTemplate.contentType')}
-            name="contentType"
-            value={form.contentType}
-            onChange={handleChange}
-            placeholder={t('adminTemplate.contentTypePlaceholder')}
-          />
-
           <div className="form-group">
             <label>{t('adminTemplate.fileLabel')}</label>
             <FileUpload onFileSelect={handleFileSelect} accept=".pdf" label={t('adminTemplate.fileDrop')} />
@@ -150,12 +162,14 @@ export default function AdminTemplatePage() {
             ))}
           </div>
 
-          <TagInput
-            label={t('adminTemplate.venueNames')}
-            tags={venueNames}
-            onChange={setVenueNames}
-            placeholder={t('adminTemplate.venueNamesPlaceholder')}
-          />
+          <div className="form-group">
+            <label>{t('adminTemplate.venueName')}</label>
+            <select className="form-control" value={selectedVenue} onChange={(e) => setSelectedVenue(e.target.value)} required>
+              {venues.map((v) => (
+                <option key={v.name} value={v.name}>{v.name}</option>
+              ))}
+            </select>
+          </div>
 
           <button type="submit" className="btn btn-primary btn-lg btn-block mt-2" disabled={loading}>
             {loading ? t('adminTemplate.submitting') : t('adminTemplate.submit')}

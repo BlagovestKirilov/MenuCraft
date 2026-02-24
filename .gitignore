@@ -36,3 +36,5 @@ build/
 /frontend/node_modules
 
 /src/main/resources/mds
+
+/logs

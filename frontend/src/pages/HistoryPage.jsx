@@ -11,7 +11,10 @@ export default function HistoryPage() {
   const { t } = useTranslation();
   const didFetch = useRef(false);
 
+  const [allMenus, setAllMenus] = useState([]);
   const [menus, setMenus] = useState([]);
+  const [venues, setVenues] = useState([]);
+  const [selectedVenue, setSelectedVenue] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -52,10 +55,15 @@ export default function HistoryPage() {
     const fetchData = async () => {
       try {
         const [historyData, venuesData] = await Promise.all([getHistory(), getVenues()]);
-        setMenus(historyData.menus || []);
+        const menuList = historyData.menus || [];
+        setAllMenus(menuList);
+        setMenus(menuList);
+
+        const venueList = venuesData.venues || [];
+        setVenues(venueList);
 
         const conns = [];
-        for (const v of venuesData.venues || []) {
+        for (const v of venueList) {
           for (const c of v.facebookConnections || []) {
             if (c.status === 'CONNECTED') {
               conns.push({ ...c, venueName: v.name });
@@ -72,6 +80,16 @@ export default function HistoryPage() {
     };
     fetchData();
   }, []);
+
+  const handleVenueFilter = (e) => {
+    const venue = e.target.value;
+    setSelectedVenue(venue);
+    if (!venue) {
+      setMenus(allMenus);
+    } else {
+      setMenus(allMenus.filter((m) => m.venueName === venue));
+    }
+  };
 
   const handleMenuClick = async (menu) => {
     setDetailLoading(true);
@@ -139,6 +157,20 @@ export default function HistoryPage() {
         <h1>{t('history.title')}</h1>
         <p>{t('history.subtitle')}</p>
       </div>
+
+      {!loading && venues.length > 0 && (
+        <div className="card" style={{ maxWidth: 800, marginBottom: '1.5rem' }}>
+          <div className="form-group" style={{ marginBottom: 0 }}>
+            <label>{t('history.filterByVenue')}</label>
+            <select className="form-control" value={selectedVenue} onChange={handleVenueFilter}>
+              <option value="">{t('history.allVenues')}</option>
+              {venues.map((v) => (
+                <option key={v.name} value={v.name}>{v.name}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+      )}
 
       <ErrorAlert message={error} onClose={() => setError('')} />
 

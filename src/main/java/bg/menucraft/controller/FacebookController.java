@@ -7,6 +7,7 @@ import bg.menucraft.service.FacebookOAuthService;
 import bg.menucraft.service.FacebookPostingService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,6 +29,7 @@ import java.nio.charset.StandardCharsets;
  * GET  /facebook/oauth/callback?code=...&state=.. → OAuth callback (from Facebook redirect)
  * POST /facebook/post                            → Post to a connected Facebook Page
  */
+@Log4j2
 @RequiredArgsConstructor
 @RequestMapping("/facebook")
 @RestController

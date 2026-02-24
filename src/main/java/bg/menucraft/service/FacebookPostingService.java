@@ -1,14 +1,19 @@
 package bg.menucraft.service;
 
 import bg.menucraft.config.FacebookProperties;
+import bg.menucraft.constant.Constants;
+import bg.menucraft.constant.ExceptionConstants;
+import bg.menucraft.constant.LoggingConstants;
 import bg.menucraft.enums.FacebookConnectionStatus;
+import bg.menucraft.exception.FacebookApiException;
+import bg.menucraft.exception.ResourceNotFoundException;
 import bg.menucraft.model.FacebookConnection;
 import bg.menucraft.model.request.FacebookPostRequest;
 import bg.menucraft.model.response.FacebookPostResponse;
 import bg.menucraft.repository.FacebookConnectionRepository;
 import bg.menucraft.security.TokenEncryptionService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -25,7 +30,7 @@ import java.util.Map;
  * Handles posting content (text, photo URL, or direct image upload) to a connected
  * Facebook Page via the Graph API.
  */
-@Slf4j
+@Log4j2
 @RequiredArgsConstructor
 @Service
 public class FacebookPostingService {
@@ -42,11 +47,11 @@ public class FacebookPostingService {
     @Transactional
     public FacebookPostResponse post(FacebookPostRequest request) {
         FacebookConnection connection = facebookConnectionRepository.findById(request.getConnectionId())
-                .orElseThrow(() -> new RuntimeException("Facebook connection not found: " + request.getConnectionId()));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        String.format(ExceptionConstants.FACEBOOK_CONNECTION_NOT_FOUND, request.getConnectionId())));
 
         if (connection.getStatus() != FacebookConnectionStatus.CONNECTED) {
-            return FacebookPostResponse.error(
-                    "This Facebook connection is disconnected. Please reconnect via OAuth.");
+            return FacebookPostResponse.error(ExceptionConstants.FACEBOOK_CONNECTION_DISCONNECTED);
         }
 
         String pageToken = tokenEncryptionService.decrypt(connection.getEncryptedPageToken());
@@ -62,7 +67,7 @@ public class FacebookPostingService {
                 postId = postText(connection.getPageId(), pageToken, request.getMessage());
             }
 
-            log.info("Posted to Facebook page '{}' ({}): postId={}", connection.getPageName(), connection.getPageId(), postId);
+            log.info(LoggingConstants.FACEBOOK_POST_SUCCESS, connection.getPageName(), connection.getPageId(), postId);
             return FacebookPostResponse.success(postId);
 
         } catch (HttpClientErrorException e) {
@@ -77,8 +82,8 @@ public class FacebookPostingService {
         String url = facebookProperties.graphApiBase() + "/" + pageId + "/feed";
 
         MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
-        form.add("message", message);
-        form.add("access_token", pageToken);
+        form.add(Constants.MESSAGE, message);
+        form.add(Constants.ACCESS_TOKEN, pageToken);
 
         Map<String, Object> response = restClient.post()
                 .uri(url)
@@ -89,7 +94,7 @@ public class FacebookPostingService {
                 .body(Map.class);
 
         if (response == null || !response.containsKey("id")) {
-            throw new RuntimeException("Facebook did not return a post ID for text post");
+            throw new FacebookApiException(ExceptionConstants.FACEBOOK_NO_POST_ID);
         }
         return response.get("id").toString();
     }
@@ -100,8 +105,8 @@ public class FacebookPostingService {
 
         MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
         form.add("url", photoUrl);
-        form.add("message", caption);
-        form.add("access_token", pageToken);
+        form.add(Constants.MESSAGE, caption);
+        form.add(Constants.ACCESS_TOKEN, pageToken);
 
         Map<String, Object> response = restClient.post()
                 .uri(url)
@@ -112,7 +117,7 @@ public class FacebookPostingService {
                 .body(Map.class);
 
         if (response == null || !response.containsKey("id")) {
-            throw new RuntimeException("Facebook did not return a post ID for photo post");
+            throw new FacebookApiException(ExceptionConstants.FACEBOOK_NO_POST_ID);
         }
         return response.get("id").toString();
     }
@@ -133,8 +138,8 @@ public class FacebookPostingService {
 
         MultiValueMap<String, Object> parts = new LinkedMultiValueMap<>();
         parts.add("source", imageResource);
-        parts.add("message", caption);
-        parts.add("access_token", pageToken);
+        parts.add(Constants.MESSAGE, caption);
+        parts.add(Constants.ACCESS_TOKEN, pageToken);
 
         Map<String, Object> response = restClient.post()
                 .uri(url)
@@ -145,7 +150,7 @@ public class FacebookPostingService {
                 .body(Map.class);
 
         if (response == null || !response.containsKey("id")) {
-            throw new RuntimeException("Facebook did not return a post ID for photo upload");
+            throw new FacebookApiException(ExceptionConstants.FACEBOOK_NO_POST_ID);
         }
         return response.get("id").toString();
     }
@@ -154,17 +159,16 @@ public class FacebookPostingService {
 
     private FacebookPostResponse handleGraphApiError(FacebookConnection connection, HttpClientErrorException e) {
         String body = e.getResponseBodyAsString();
-        log.warn("Facebook Graph API error for page '{}': status={}, body={}",
+        log.warn(LoggingConstants.FACEBOOK_GRAPH_ERROR,
                 connection.getPageId(), e.getStatusCode(), body);
 
         if (body.contains("\"code\":190") || body.contains("OAuthException")) {
             connection.setStatus(FacebookConnectionStatus.DISCONNECTED);
             facebookConnectionRepository.save(connection);
-            log.warn("Marked Facebook connection {} as DISCONNECTED due to token error", connection.getId());
-            return FacebookPostResponse.error(
-                    "Facebook token is invalid or expired. Connection marked as disconnected. Please reconnect.");
+            log.warn(LoggingConstants.FACEBOOK_TOKEN_EXPIRED, connection.getId());
+            return FacebookPostResponse.error(ExceptionConstants.FACEBOOK_TOKEN_EXPIRED);
         }
 
-        return FacebookPostResponse.error("Facebook API error: " + body);
+        return FacebookPostResponse.error(String.format(ExceptionConstants.FACEBOOK_API_ERROR, body));
     }
 }

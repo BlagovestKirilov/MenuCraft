@@ -18,5 +18,9 @@ public record ApiResponse(
     public static ApiResponse success() {
         return new ApiResponse("SUCCESS", null, null, null, null);
     }
+
+    public static ApiResponse error(String message) {
+        return new ApiResponse("ERROR", message, null, null, null);
+    }
 }
 

@@ -95,11 +95,14 @@ client.interceptors.response.use(
       }
     }
 
-    // For 401 on auth endpoints, or other errors, just reject
-    if (error.response?.status === 401) {
+    // Only redirect to login on 401 for non-auth endpoints (token truly expired)
+    if (error.response?.status === 401 && !originalRequest.url?.includes('/auth/')) {
       clearAuthAndRedirect();
+      return Promise.reject(error);
     }
 
+    // For all other errors (400, 403, 404, 409, 500, etc.), just reject
+    // so the calling component can display the error message on screen
     return Promise.reject(error);
   }
 );

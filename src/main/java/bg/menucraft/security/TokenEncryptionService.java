@@ -1,7 +1,11 @@
 package bg.menucraft.security;
 
 import bg.menucraft.config.EncryptionProperties;
+import bg.menucraft.constant.ExceptionConstants;
+import bg.menucraft.constant.LoggingConstants;
+import bg.menucraft.exception.EncryptionException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.Cipher;
@@ -16,6 +20,7 @@ import java.util.Base64;
  * Each encrypted value is prefixed with its random IV so it can be decrypted independently.
  * Output format: Base64( IV[12] || ciphertext || authTag[16] )
  */
+@Log4j2
 @RequiredArgsConstructor
 @Service
 public class TokenEncryptionService {
@@ -51,7 +56,8 @@ public class TokenEncryptionService {
 
             return Base64.getEncoder().encodeToString(combined);
         } catch (Exception e) {
-            throw new RuntimeException("Failed to encrypt token", e);
+            log.error(LoggingConstants.ENCRYPTION_FAILED, e);
+            throw new EncryptionException(ExceptionConstants.ENCRYPTION_FAILED, e);
         }
     }
 
@@ -78,7 +84,8 @@ public class TokenEncryptionService {
             byte[] decrypted = cipher.doFinal(ciphertext);
             return new String(decrypted, java.nio.charset.StandardCharsets.UTF_8);
         } catch (Exception e) {
-            throw new RuntimeException("Failed to decrypt token", e);
+            log.error(LoggingConstants.DECRYPTION_FAILED, e);
+            throw new EncryptionException(ExceptionConstants.DECRYPTION_FAILED, e);
         }
     }
 

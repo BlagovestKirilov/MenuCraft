@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import useAuth from '../hooks/useAuth';
 import FormField from '../components/FormField';
@@ -66,9 +66,6 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <div className="auth-footer">
-          {t('login.noAccount')} <Link to="/auth/register">{t('login.registerLink')}</Link>
-        </div>
       </div>
     </div>
   );

@@ -28,6 +28,7 @@
     "menu": "Menu",
     "facebook": "Facebook",
     "admin": "Admin",
+    "adminRegister": "Register Account",
     "login": "Login",
     "register": "Register"
   },
@@ -50,6 +51,9 @@
     "usernamePlaceholder": "4-20 alphanumeric characters",
     "password": "Password",
     "passwordPlaceholder": "5-50 characters",
+    "confirmPassword": "Confirm Password",
+    "confirmPasswordPlaceholder": "Re-enter password",
+    "passwordMismatch": "Passwords do not match.",
     "role": "Role",
     "roleCompany": "Company",
     "roleAdmin": "Admin",
@@ -88,6 +92,10 @@
       }
     },
     "adminCards": {
+      "registerAccount": {
+        "title": "Register Account",
+        "description": "Create a new admin or company account."
+      },
       "addTemplate": {
         "title": "Add Template",
         "description": "Upload a new PDF template with sections."
@@ -128,16 +136,17 @@
     "address": "Address",
     "description": "Description",
     "descriptionPlaceholder": "Optional, max 500 chars",
-    "accountUsernames": "Account Usernames *",
-    "accountUsernamesPlaceholder": "Type username and press Enter",
+    "accountLabel": "Company Account",
+    "accountRequired": "Please select a company account.",
     "submit": "Register Venue",
     "submitting": "Registering...",
     "success": "Venue registered successfully!"
   },
   "venueTemplates": {
-    "title": "Venue Templates",
-    "subtitle": "Look up templates assigned to a venue.",
-    "searchPlaceholder": "Enter venue name",
+    "title": "Templates",
+    "subtitle": "Browse templates assigned to a venue.",
+    "venueLabel": "Venue",
+    "addTemplate": "Add Template",
     "noTemplates": "No templates found for this venue.",
     "clickHint": "Click a template to generate a menu from it.",
     "name": "Name",
@@ -182,10 +191,29 @@
   "history": {
     "title": "Menu History",
     "subtitle": "Previously generated menus.",
+    "filterByVenue": "Filter by Venue",
+    "allVenues": "All Venues",
     "noMenus": "No generated menus yet.",
     "venueName": "Venue",
     "templateName": "Template",
     "createdAt": "Created"
+  },
+  "adminRegister": {
+    "title": "Register Account",
+    "subtitle": "Create a new account and assign a role.",
+    "username": "Username",
+    "usernamePlaceholder": "4-20 alphanumeric characters",
+    "password": "Password",
+    "passwordPlaceholder": "5-50 characters",
+    "confirmPassword": "Confirm Password",
+    "confirmPasswordPlaceholder": "Re-enter password",
+    "passwordMismatch": "Passwords do not match.",
+    "role": "Role",
+    "roleCompany": "Company",
+    "roleAdmin": "Admin",
+    "submit": "Register Account",
+    "submitting": "Creating account...",
+    "success": "Account registered successfully!"
   },
   "adminTemplate": {
     "title": "Add Template",
@@ -206,8 +234,8 @@
     "sectionMainCourse": "Main Course",
     "sectionDessert": "Dessert",
     "slotsPlaceholder": "Slots",
-    "venueNames": "Venue Names *",
-    "venueNamesPlaceholder": "Type venue name and press Enter",
+    "venueName": "Venue *",
+    "venueRequired": "Please select a venue.",
     "submit": "Add Template",
     "submitting": "Uploading...",
     "success": "Template added successfully!"

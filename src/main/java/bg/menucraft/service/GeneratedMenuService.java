@@ -1,5 +1,9 @@
 package bg.menucraft.service;
 
+import bg.menucraft.constant.ExceptionConstants;
+import bg.menucraft.constant.LoggingConstants;
+import bg.menucraft.exception.AccessDeniedException;
+import bg.menucraft.exception.ResourceNotFoundException;
 import bg.menucraft.enums.MealEnum;
 import bg.menucraft.model.Account;
 import bg.menucraft.model.GeneratedMenu;
@@ -16,11 +20,13 @@ import bg.menucraft.repository.VenueRepository;
 import bg.menucraft.util.GeneratedMenuMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
 
+@Log4j2
 @RequiredArgsConstructor
 @Service
 public class GeneratedMenuService {
@@ -36,15 +42,17 @@ public class GeneratedMenuService {
     public void saveMenuGeneration(MenuGenerationRequest menuGenerationRequest) {
         Template template = templateRepository
                 .findByName(menuGenerationRequest.getTemplateName())
-                .orElseThrow(() ->
-                        new RuntimeException("Template not found: " + menuGenerationRequest.getTemplateName()));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        String.format(ExceptionConstants.TEMPLATE_NOT_FOUND, menuGenerationRequest.getTemplateName())));
 
         String username = authService.getUsername();
         Account account = accountRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("Account not found: " + username));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        String.format(ExceptionConstants.ACCOUNT_NOT_FOUND, username)));
 
         Venue venue = venueRepository.findByName(menuGenerationRequest.getVenueName())
-                .orElseThrow(() -> new RuntimeException("Venue not found: " + menuGenerationRequest.getVenueName()));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        String.format(ExceptionConstants.VENUE_NOT_FOUND, menuGenerationRequest.getVenueName())));
 
         GeneratedMenu menu = generatedMenuMapper.toEntity(menuGenerationRequest);
         menu.setTemplate(template);
@@ -53,14 +61,23 @@ public class GeneratedMenuService {
         menu.getMeals().forEach(meal -> meal.setGeneratedMenu(menu));
 
         generatedMenuRepository.save(menu);
+
+        log.info(LoggingConstants.MENU_SAVED, username, menuGenerationRequest.getVenueName(), menuGenerationRequest.getTemplateName());
     }
 
     public HistoryResponse getHistory() {
-        String username = authService.getUsername();
+        List<GeneratedMenu> menuList;
 
-        List<GeneratedMenuDto> menus = generatedMenuRepository
-                .findByAccountUsernameOrderByCreatedAtDesc(username)
-                .stream()
+        if (authService.isAdmin()) {
+            menuList = generatedMenuRepository.findAllByOrderByCreatedAtDesc();
+            log.info(LoggingConstants.HISTORY_FETCHED_ADMIN, menuList.size());
+        } else {
+            String username = authService.getUsername();
+            menuList = generatedMenuRepository.findByAccountUsernameOrderByCreatedAtDesc(username);
+            log.info(LoggingConstants.HISTORY_FETCHED, menuList.size(), username);
+        }
+
+        List<GeneratedMenuDto> menus = menuList.stream()
                 .map(m -> new GeneratedMenuDto(m.getId(), m.getTemplate().getName(), m.getVenue().getName(), m.getCreatedAt()))
                 .toList();
 
@@ -72,13 +89,19 @@ public class GeneratedMenuService {
      * so the PDF can be regenerated on the fly without storing binary data.
      */
     public MenuGenerationRequest buildRegenerationRequest(UUID menuId) {
-        String username = authService.getUsername();
-
         GeneratedMenu menu = generatedMenuRepository.findById(menuId)
-                .orElseThrow(() -> new RuntimeException("Generated menu not found: " + menuId));
+                .orElseThrow(() -> {
+                    log.warn(LoggingConstants.MENU_NOT_FOUND, menuId);
+                    return new ResourceNotFoundException(
+                            String.format(ExceptionConstants.GENERATED_MENU_NOT_FOUND, menuId));
+                });
 
-        if (!menu.getAccount().getUsername().equals(username)) {
-            throw new RuntimeException("Access denied");
+        if (!authService.isAdmin()) {
+            String username = authService.getUsername();
+            if (!menu.getAccount().getUsername().equals(username)) {
+                log.warn(LoggingConstants.MENU_ACCESS_DENIED, menuId, username);
+                throw new AccessDeniedException(ExceptionConstants.ACCESS_DENIED);
+            }
         }
 
         MenuGenerationRequest request = new MenuGenerationRequest();

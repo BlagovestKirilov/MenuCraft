@@ -33,15 +33,6 @@ export function AuthProvider({ children }) {
     [saveSession]
   );
 
-  const register = useCallback(
-    async (payload) => {
-      const data = await authApi.register(payload);
-      saveSession(data);
-      return data;
-    },
-    [saveSession]
-  );
-
   const logout = useCallback(() => {
     localStorage.removeItem('token');
     localStorage.removeItem('refreshToken');
@@ -51,8 +42,8 @@ export function AuthProvider({ children }) {
   }, []);
 
   const value = useMemo(
-    () => ({ token, role, isAuthenticated, isAdmin, login, register, logout }),
-    [token, role, isAuthenticated, isAdmin, login, register, logout]
+    () => ({ token, role, isAuthenticated, isAdmin, login, logout }),
+    [token, role, isAuthenticated, isAdmin, login, logout]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

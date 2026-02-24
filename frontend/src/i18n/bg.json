@@ -28,6 +28,7 @@
     "menu": "Меню",
     "facebook": "Фейсбук",
     "admin": "Админ",
+    "adminRegister": "Регистрация на акаунт",
     "login": "Вход",
     "register": "Регистрация"
   },
@@ -50,6 +51,9 @@
     "usernamePlaceholder": "4-20 букви и цифри",
     "password": "Парола",
     "passwordPlaceholder": "5-50 символа",
+    "confirmPassword": "Потвърдете паролата",
+    "confirmPasswordPlaceholder": "Въведете паролата отново",
+    "passwordMismatch": "Паролите не съвпадат.",
     "role": "Роля",
     "roleCompany": "Компания",
     "roleAdmin": "Администратор",
@@ -88,6 +92,10 @@
       }
     },
     "adminCards": {
+      "registerAccount": {
+        "title": "Регистрация на акаунт",
+        "description": "Създайте нов администраторски или фирмен акаунт."
+      },
       "addTemplate": {
         "title": "Добавяне на шаблон",
         "description": "Качете нов PDF шаблон със секции."
@@ -128,16 +136,17 @@
     "address": "Адрес",
     "description": "Описание",
     "descriptionPlaceholder": "По избор, макс. 500 символа",
-    "accountUsernames": "Потребителски имена *",
-    "accountUsernamesPlaceholder": "Въведете име и натиснете Enter",
+    "accountLabel": "Фирмен акаунт",
+    "accountRequired": "Моля, изберете фирмен акаунт.",
     "submit": "Регистрирай заведение",
     "submitting": "Регистриране...",
     "success": "Заведението е регистрирано успешно!"
   },
   "venueTemplates": {
-    "title": "Шаблони на заведение",
-    "subtitle": "Потърсете шаблони, свързани със заведение.",
-    "searchPlaceholder": "Въведете име на заведение",
+    "title": "Шаблони",
+    "subtitle": "Разгледайте шаблони, свързани със заведение.",
+    "venueLabel": "Заведение",
+    "addTemplate": "Добави шаблон",
     "noTemplates": "Няма намерени шаблони за това заведение.",
     "clickHint": "Натиснете върху шаблон, за да генерирате меню от него.",
     "name": "Име",
@@ -182,10 +191,29 @@
   "history": {
     "title": "История на менюта",
     "subtitle": "Предишни генерирани менюта.",
+    "filterByVenue": "Филтриране по заведение",
+    "allVenues": "Всички заведения",
     "noMenus": "Все още няма генерирани менюта.",
     "venueName": "Заведение",
     "templateName": "Шаблон",
     "createdAt": "Създадено"
+  },
+  "adminRegister": {
+    "title": "Регистрация на акаунт",
+    "subtitle": "Създайте нов акаунт и задайте роля.",
+    "username": "Потребителско име",
+    "usernamePlaceholder": "4-20 букви и цифри",
+    "password": "Парола",
+    "passwordPlaceholder": "5-50 символа",
+    "confirmPassword": "Потвърдете паролата",
+    "confirmPasswordPlaceholder": "Въведете паролата отново",
+    "passwordMismatch": "Паролите не съвпадат.",
+    "role": "Роля",
+    "roleCompany": "Компания",
+    "roleAdmin": "Администратор",
+    "submit": "Регистрирай акаунт",
+    "submitting": "Създаване на акаунт...",
+    "success": "Акаунтът е регистриран успешно!"
   },
   "adminTemplate": {
     "title": "Добавяне на шаблон",
@@ -206,8 +234,8 @@
     "sectionMainCourse": "Основно ястие",
     "sectionDessert": "Десерт",
     "slotsPlaceholder": "Слотове",
-    "venueNames": "Имена на заведения *",
-    "venueNamesPlaceholder": "Въведете име на заведение и натиснете Enter",
+    "venueName": "Заведение *",
+    "venueRequired": "Моля, изберете заведение.",
     "submit": "Добави шаблон",
     "submitting": "Качване...",
     "success": "Шаблонът е добавен успешно!"

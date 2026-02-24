@@ -1,11 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useSearchParams, useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import useAuth from '../hooks/useAuth';
-import FormField from '../components/FormField';
 import ErrorAlert from '../components/ErrorAlert';
 import LoadingSpinner from '../components/LoadingSpinner';
-import { getTemplatesByVenue } from '../api/venueApi';
+import { getTemplatesByVenue, getVenues } from '../api/venueApi';
 import { getErrorMessage } from '../utils/helpers';
 
 export default function VenueTemplatesPage() {
@@ -17,20 +16,21 @@ export default function VenueTemplatesPage() {
 
   const initialVenue = searchParams.get('venue') || '';
 
+  const [venues, setVenues] = useState([]);
   const [venueName, setVenueName] = useState(initialVenue);
   const [templates, setTemplates] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [searched, setSearched] = useState(false);
   const [previewData, setPreviewData] = useState(null);
 
   const fetchTemplates = async (name) => {
-    if (!name.trim()) return;
+    if (!name) return;
     setError('');
     setLoading(true);
     setSearched(true);
     try {
-      const data = await getTemplatesByVenue(name.trim());
+      const data = await getTemplatesByVenue(name);
       setTemplates(data.templates || []);
     } catch (err) {
       setError(getErrorMessage(err));
@@ -41,16 +41,35 @@ export default function VenueTemplatesPage() {
   };
 
   useEffect(() => {
-    if (initialVenue && !didFetch.current) {
-      didFetch.current = true;
-      fetchTemplates(initialVenue);
-    }
+    if (didFetch.current) return;
+    didFetch.current = true;
+
+    const init = async () => {
+      try {
+        const venuesData = await getVenues();
+        const venueList = venuesData.venues || [];
+        setVenues(venueList);
+        const startVenue = initialVenue || (venueList.length > 0 ? venueList[0].name : '');
+        if (startVenue) {
+          setVenueName(startVenue);
+          await fetchTemplates(startVenue);
+        } else {
+          setLoading(false);
+        }
+      } catch (err) {
+        setError(getErrorMessage(err));
+        setLoading(false);
+      }
+    };
+    init();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleSearch = (e) => {
-    e.preventDefault();
-    fetchTemplates(venueName);
+  const handleVenueChange = (e) => {
+    const name = e.target.value;
+    setVenueName(name);
+    if (name) fetchTemplates(name);
+    else { setTemplates([]); setSearched(false); }
   };
 
   const handleTemplateClick = (tpl) => {
@@ -84,27 +103,28 @@ export default function VenueTemplatesPage() {
   return (
     <div className="page-container">
       <div className="page-header">
-        <h1>{t('venueTemplates.title')}</h1>
-        <p>{t('venueTemplates.subtitle')}</p>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+          <div>
+            <h1>{t('venueTemplates.title')}</h1>
+            <p>{t('venueTemplates.subtitle')}</p>
+          </div>
+          {isAdmin && (
+            <Link to="/admin/template" className="btn btn-primary btn-lg">
+              {t('venueTemplates.addTemplate')}
+            </Link>
+          )}
+        </div>
       </div>
 
       <div className="card" style={{ maxWidth: 960 }}>
-        {/* Search bar — only for admins */}
-        {isAdmin && (
-          <form onSubmit={handleSearch} className="flex gap-1 items-center mb-2">
-            <div style={{ flex: 1 }}>
-              <FormField
-                name="venueName"
-                value={venueName}
-                onChange={(_, v) => setVenueName(v)}
-                placeholder={t('venueTemplates.searchPlaceholder')}
-              />
-            </div>
-            <button type="submit" className="btn btn-primary" disabled={loading}>
-              {t('common.search')}
-            </button>
-          </form>
-        )}
+        <div className="form-group" style={{ marginBottom: '1rem' }}>
+          <label>{t('venueTemplates.venueLabel')}</label>
+          <select className="form-control" value={venueName} onChange={handleVenueChange}>
+            {venues.map((v) => (
+              <option key={v.name} value={v.name}>{v.name}</option>
+            ))}
+          </select>
+        </div>
 
         <ErrorAlert message={error} onClose={() => setError('')} />
 

@@ -1,5 +1,10 @@
 package bg.menucraft.service;
 
+import bg.menucraft.constant.Constants;
+import bg.menucraft.constant.ExceptionConstants;
+import bg.menucraft.constant.LoggingConstants;
+import bg.menucraft.exception.MenuGenerationException;
+import bg.menucraft.exception.ResourceNotFoundException;
 import bg.menucraft.model.Template;
 import bg.menucraft.model.dto.MealDto;
 import bg.menucraft.model.request.MenuGenerationRequest;
@@ -7,6 +12,7 @@ import bg.menucraft.model.response.MenuResponse;
 import bg.menucraft.repository.TemplateRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.log4j.Log4j2;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.io.RandomAccessReadBuffer;
@@ -30,6 +36,7 @@ import java.io.InputStream;
 import java.util.Base64;
 import java.util.List;
 
+@Log4j2
 @RequiredArgsConstructor
 @Service
 public class FileGenerationService {
@@ -45,6 +52,7 @@ public class FileGenerationService {
     public MenuResponse generateMenu(MenuGenerationRequest menuGenerationRequest) {
         MenuResponse response = buildMenu(menuGenerationRequest);
         generatedMenuService.saveMenuGeneration(menuGenerationRequest);
+        log.info(LoggingConstants.MENU_GENERATED, menuGenerationRequest.getVenueName(), menuGenerationRequest.getTemplateName());
         return response;
     }
 
@@ -62,11 +70,13 @@ public class FileGenerationService {
     @SneakyThrows
     private MenuResponse buildMenu(MenuGenerationRequest menuGenerationRequest) {
         Template template = templateRepository.findByName(menuGenerationRequest.getTemplateName())
-                .orElseThrow(() -> new RuntimeException("Template not found: " + menuGenerationRequest.getTemplateName()));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        String.format(ExceptionConstants.TEMPLATE_NOT_FOUND, menuGenerationRequest.getTemplateName())));
 
         byte[] templateData = template.getData();
         if (templateData == null || templateData.length == 0) {
-            throw new IllegalStateException("Template has no data: " + menuGenerationRequest.getTemplateName());
+            throw new MenuGenerationException(
+                    String.format(ExceptionConstants.TEMPLATE_NO_DATA, menuGenerationRequest.getTemplateName()));
         }
 
         ClassPathResource fontResource = new ClassPathResource("fonts/arialbd.ttf");
@@ -80,7 +90,7 @@ public class FileGenerationService {
              ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
 
             PDAcroForm acroForm = document.getDocumentCatalog().getAcroForm();
-            if (acroForm == null) throw new IllegalStateException("PDF has no AcroForm");
+            if (acroForm == null) throw new MenuGenerationException(ExceptionConstants.TEMPLATE_NO_ACROFORM);
 
             PDType0Font unicodeFont = PDType0Font.load(document, fontIs, false);
 
@@ -120,10 +130,11 @@ public class FileGenerationService {
             String pdfBase64 = Base64.getEncoder().encodeToString(pdfBytes);
             String previewImage = previewImageBytes != null ? Base64.getEncoder().encodeToString(previewImageBytes) : null;
 
-            return MenuResponse.success(pdfBase64, "application/pdf", "menu-filled.pdf", previewImage);
+            return MenuResponse.success(pdfBase64, Constants.APPLICATION_PDF, "menu-filled.pdf", previewImage);
         }
     }
 
+    @SneakyThrows
     private byte[] renderFirstPageAsImage(byte[] pdfBytes) {
         try (InputStream is = new ByteArrayInputStream(pdfBytes);
              PDDocument doc = Loader.loadPDF(new RandomAccessReadBuffer(is));
@@ -134,8 +145,6 @@ public class FileGenerationService {
             ImageIO.write(image, "png", imgOut);
             return imgOut.toByteArray();
 
-        } catch (IOException e) {
-            return null;
         }
     }
 

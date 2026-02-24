@@ -13,11 +13,13 @@ import bg.menucraft.service.TemplateService;
 import bg.menucraft.service.VenueService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
+@Log4j2
 @RequiredArgsConstructor
 @RequestMapping("/venue")
 @RestController

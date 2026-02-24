@@ -1,6 +1,7 @@
 package bg.menucraft.security;
 
 import bg.menucraft.constant.Constants;
+import bg.menucraft.constant.LoggingConstants;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -40,7 +41,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             String jwt = authHeader.substring(7);
             String username = jwtService.extractUsername(jwt);
-            //TODO: Confirm username exists in DB. If not invalidate token.
 
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 String role = jwtService.extractRole(jwt);
@@ -57,7 +57,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
         } catch (Exception exception) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            log.warn(exception.getMessage());
+            log.warn(LoggingConstants.JWT_PROCESSING_FAILED, request.getRequestURI(), exception.getMessage());
         }
     }
 }

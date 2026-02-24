@@ -1,40 +1,40 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import useAuth from '../hooks/useAuth';
 import FormField from '../components/FormField';
 import ErrorAlert from '../components/ErrorAlert';
-import LanguageSwitcher from '../components/LanguageSwitcher';
+import SuccessAlert from '../components/SuccessAlert';
+import { registerAccount } from '../api/adminApi';
 import { getErrorMessage } from '../utils/helpers';
 
-export default function RegisterPage() {
-  const { register } = useAuth();
-  const navigate = useNavigate();
+export default function AdminRegisterPage() {
   const { t } = useTranslation();
 
   const [form, setForm] = useState({ username: '', password: '', confirmPassword: '', role: 'COMPANY' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
   const handleChange = (name, value) => setForm((f) => ({ ...f, [name]: value }));
 
   const ROLES = [
-    { value: 'COMPANY', label: t('register.roleCompany') },
-    { value: 'ADMIN', label: t('register.roleAdmin') },
+    { value: 'COMPANY', label: t('adminRegister.roleCompany') },
+    { value: 'ADMIN', label: t('adminRegister.roleAdmin') },
   ];
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setSuccess('');
     if (form.password !== form.confirmPassword) {
-      setError(t('register.passwordMismatch'));
+      setError(t('adminRegister.passwordMismatch'));
       return;
     }
     setLoading(true);
     try {
       const { confirmPassword, ...payload } = form;
-      await register(payload);
-      navigate('/dashboard');
+      await registerAccount(payload);
+      setSuccess(t('adminRegister.success'));
+      setForm({ username: '', password: '', confirmPassword: '', role: 'COMPANY' });
     } catch (err) {
       setError(getErrorMessage(err));
     } finally {
@@ -43,45 +43,45 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="auth-wrapper">
-      <div className="card auth-card">
-        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem' }}>
-          <LanguageSwitcher />
-        </div>
-        <h1>{t('register.title')}</h1>
-        <p className="subtitle">{t('register.subtitle')}</p>
+    <div className="page-container">
+      <div className="page-header">
+        <h1>{t('adminRegister.title')}</h1>
+        <p>{t('adminRegister.subtitle')}</p>
+      </div>
 
+      <div className="card" style={{ maxWidth: 560 }}>
         <ErrorAlert message={error} onClose={() => setError('')} />
+        <SuccessAlert message={success} onClose={() => setSuccess('')} />
 
         <form onSubmit={handleSubmit}>
           <FormField
-            label={t('register.username')}
+            label={t('adminRegister.username')}
             name="username"
             value={form.username}
             onChange={handleChange}
-            placeholder={t('register.usernamePlaceholder')}
+            placeholder={t('adminRegister.usernamePlaceholder')}
             required
           />
           <FormField
-            label={t('register.password')}
+            label={t('adminRegister.password')}
             name="password"
             type="password"
             value={form.password}
             onChange={handleChange}
-            placeholder={t('register.passwordPlaceholder')}
+            placeholder={t('adminRegister.passwordPlaceholder')}
             required
           />
           <FormField
-            label={t('register.confirmPassword')}
+            label={t('adminRegister.confirmPassword')}
             name="confirmPassword"
             type="password"
             value={form.confirmPassword}
             onChange={handleChange}
-            placeholder={t('register.confirmPasswordPlaceholder')}
+            placeholder={t('adminRegister.confirmPasswordPlaceholder')}
             required
           />
           <FormField
-            label={t('register.role')}
+            label={t('adminRegister.role')}
             name="role"
             type="select"
             value={form.role}
@@ -89,14 +89,10 @@ export default function RegisterPage() {
             options={ROLES}
             required
           />
-          <button type="submit" className="btn btn-primary btn-block btn-lg" disabled={loading}>
-            {loading ? t('register.submitting') : t('register.submit')}
+          <button type="submit" className="btn btn-primary btn-lg btn-block mt-2" disabled={loading}>
+            {loading ? t('adminRegister.submitting') : t('adminRegister.submit')}
           </button>
         </form>
-
-        <div className="auth-footer">
-          {t('register.hasAccount')} <Link to="/auth/login">{t('register.loginLink')}</Link>
-        </div>
       </div>
     </div>
   );

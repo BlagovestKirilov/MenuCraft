@@ -4,7 +4,6 @@ import PrivateRoute from './PrivateRoute';
 
 // Auth pages
 import LoginPage from '../pages/LoginPage';
-import RegisterPage from '../pages/RegisterPage';
 
 // Public / Venue pages
 import DashboardPage from '../pages/DashboardPage';
@@ -15,6 +14,7 @@ import MenuGeneratorPage from '../pages/MenuGeneratorPage';
 import HistoryPage from '../pages/HistoryPage';
 
 // Admin pages
+import AdminRegisterPage from '../pages/AdminRegisterPage';
 import AdminTemplatePage from '../pages/AdminTemplatePage';
 import AdminTemplateListPage from '../pages/AdminTemplateListPage';
 
@@ -27,7 +27,6 @@ export default function AppRouter() {
     <Routes>
       {/* Auth pages — no navbar */}
       <Route path="/auth/login" element={<LoginPage />} />
-      <Route path="/auth/register" element={<RegisterPage />} />
 
       {/* Facebook OAuth callback (public) */}
       <Route path="/facebook/oauth/callback" element={<FacebookCallbackPage />} />
@@ -92,6 +91,14 @@ export default function AppRouter() {
         />
 
         {/* Admin */}
+        <Route
+          path="/admin/register"
+          element={
+            <PrivateRoute>
+              <AdminRegisterPage />
+            </PrivateRoute>
+          }
+        />
         <Route
           path="/admin/template"
           element={

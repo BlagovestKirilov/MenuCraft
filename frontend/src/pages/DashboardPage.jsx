@@ -14,6 +14,12 @@ export default function DashboardPage() {
       icon: '🏪',
     },
     {
+      titleKey: 'dashboard.cards.templates.title',
+      descKey: 'dashboard.cards.templates.description',
+      link: '/venue/templates',
+      icon: '📄',
+    },
+    {
       titleKey: 'dashboard.cards.history.title',
       descKey: 'dashboard.cards.history.description',
       link: '/history',
@@ -21,37 +27,16 @@ export default function DashboardPage() {
     },
   ];
 
-  const ADMIN_ONLY_CARDS = [
-    {
-      titleKey: 'dashboard.cards.templates.title',
-      descKey: 'dashboard.cards.templates.description',
-      link: '/venue/templates',
-      icon: '📄',
-    },
-    {
-      titleKey: 'dashboard.cards.menu.title',
-      descKey: 'dashboard.cards.menu.description',
-      link: '/menu/generate',
-      icon: '🍽️',
-    },
-  ];
-
   const ADMIN_CARDS = [
     {
-      titleKey: 'dashboard.adminCards.addTemplate.title',
-      descKey: 'dashboard.adminCards.addTemplate.description',
-      link: '/admin/template',
-      icon: '⬆️',
-    },
-    {
-      titleKey: 'dashboard.adminCards.browseTemplates.title',
-      descKey: 'dashboard.adminCards.browseTemplates.description',
-      link: '/admin/templates',
-      icon: '📋',
+      titleKey: 'dashboard.adminCards.registerAccount.title',
+      descKey: 'dashboard.adminCards.registerAccount.description',
+      link: '/admin/register',
+      icon: '👤',
     },
   ];
 
-  const cards = [...COMMON_CARDS, ...(isAdmin ? ADMIN_ONLY_CARDS : [])];
+  const allCards = [...COMMON_CARDS, ...(isAdmin ? ADMIN_CARDS : [])];
 
   return (
     <div className="page-container">
@@ -60,38 +45,28 @@ export default function DashboardPage() {
         <p>{t('dashboard.subtitle')}</p>
       </div>
 
-      <div className="grid-2">
-        {cards.map((c) => (
-          <Link key={c.link} to={c.link} style={{ textDecoration: 'none' }}>
-            <div className="card card-compact" style={{ cursor: 'pointer', transition: 'var(--transition)' }}>
+      <div className="grid-2" style={{ alignItems: 'stretch' }}>
+        {allCards.map((c) => (
+          <Link key={c.link} to={c.link} style={{ textDecoration: 'none', display: 'flex' }}>
+            <div
+              className="card card-compact"
+              style={{
+                cursor: 'pointer',
+                transition: 'var(--transition)',
+                borderLeft: '4px solid var(--color-primary)',
+                flex: 1,
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+            >
               <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>{c.icon}</div>
               <h3 style={{ marginBottom: '0.25rem' }}>{t(c.titleKey)}</h3>
-              <p className="text-secondary" style={{ fontSize: '0.875rem' }}>
+              <p className="text-secondary" style={{ fontSize: '0.875rem', flex: 1 }}>
                 {t(c.descKey)}
               </p>
             </div>
           </Link>
         ))}
-
-        {isAdmin &&
-          ADMIN_CARDS.map((c) => (
-            <Link key={c.link} to={c.link} style={{ textDecoration: 'none' }}>
-              <div
-                className="card card-compact"
-                style={{
-                  cursor: 'pointer',
-                  transition: 'var(--transition)',
-                  borderLeft: '4px solid var(--color-primary)',
-                }}
-              >
-                <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>{c.icon}</div>
-                <h3 style={{ marginBottom: '0.25rem' }}>{t(c.titleKey)}</h3>
-                <p className="text-secondary" style={{ fontSize: '0.875rem' }}>
-                  {t(c.descKey)}
-                </p>
-              </div>
-            </Link>
-          ))}
       </div>
     </div>
   );

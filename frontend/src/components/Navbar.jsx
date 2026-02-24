@@ -19,14 +19,11 @@ export default function Navbar() {
             <>
               <NavLink to="/dashboard">{t('nav.dashboard')}</NavLink>
               <NavLink to="/venues">{t('nav.venues')}</NavLink>
+              <NavLink to="/venue/templates">{t('nav.templates')}</NavLink>
               <NavLink to="/history">{t('nav.history')}</NavLink>
               {isAdmin && (
-                <>
-                  <NavLink to="/venue/templates">{t('nav.templates')}</NavLink>
-                  <NavLink to="/menu/generate">{t('nav.menu')}</NavLink>
-                </>
+                <NavLink to="/admin/register">{t('nav.adminRegister')}</NavLink>
               )}
-              {isAdmin && <NavLink to="/admin/template">{t('nav.admin')}</NavLink>}
               <LanguageSwitcher />
               <button onClick={logout}>{t('common.logout')}</button>
             </>
@@ -34,7 +31,6 @@ export default function Navbar() {
             <>
               <LanguageSwitcher />
               <NavLink to="/auth/login">{t('nav.login')}</NavLink>
-              <NavLink to="/auth/register">{t('nav.register')}</NavLink>
             </>
           )}
         </div>

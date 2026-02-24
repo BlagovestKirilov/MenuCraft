@@ -8,4 +8,6 @@ import java.util.UUID;
 
 public interface GeneratedMenuRepository extends JpaRepository<GeneratedMenu, UUID> {
     List<GeneratedMenu> findByAccountUsernameOrderByCreatedAtDesc(String username);
+
+    List<GeneratedMenu> findAllByOrderByCreatedAtDesc();
 }
