@@ -120,8 +120,12 @@
     "address": "Адрес",
     "description": "Описание",
     "facebookConnections": "Фейсбук връзки",
-    "connectFacebook": "Свържи",
-    "noFacebookConnections": "Няма свързани Фейсбук страници."
+    "connectFacebook": "Свържи Фейсбук",
+    "noFacebookConnections": "Няма свързани Фейсбук страници.",
+    "disconnectFacebook": "Прекъсни",
+    "disconnectConfirm": "Сигурни ли сте, че искате да прекъснете тази Фейсбук страница?",
+    "fbConnected": "Свързана",
+    "fbDisconnected": "Прекъсната"
   },
   "venueRegister": {
     "title": "Регистрация на заведение",
@@ -272,6 +276,11 @@
     "photoUrl": "URL на снимка (по избор)",
     "photoUrlPlaceholder": "https://example.com/image.jpg",
     "photoUrlHint": "Публично достъпен URL на изображение за публикации със снимки",
+    "fileLabel": "Прикачи изображение (по избор)",
+    "fileDrop": "Плъзнете PNG или PDF файл, или натиснете за избор",
+    "fileHint": "Поддържани: PNG, JPG, PDF — макс. 10 MB",
+    "fileAttached": "Прикачен файл: {{name}}",
+    "removeFile": "Премахни",
     "submit": "Публикувай",
     "submitting": "Публикуване...",
     "success": "Публикацията е създадена! ID: {{postId}}",

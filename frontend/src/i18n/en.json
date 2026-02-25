@@ -120,8 +120,12 @@
     "address": "Address",
     "description": "Description",
     "facebookConnections": "Facebook Connections",
-    "connectFacebook": "Connect",
-    "noFacebookConnections": "No Facebook pages connected."
+    "connectFacebook": "Connect Facebook",
+    "noFacebookConnections": "No Facebook pages connected.",
+    "disconnectFacebook": "Disconnect",
+    "disconnectConfirm": "Are you sure you want to disconnect this Facebook page?",
+    "fbConnected": "Connected",
+    "fbDisconnected": "Disconnected"
   },
   "venueRegister": {
     "title": "Register Venue",
@@ -272,6 +276,11 @@
     "photoUrl": "Photo URL (optional)",
     "photoUrlPlaceholder": "https://example.com/image.jpg",
     "photoUrlHint": "Publicly accessible image URL for photo posts",
+    "fileLabel": "Attach Image (optional)",
+    "fileDrop": "Drop a PNG or PDF file, or click to browse",
+    "fileHint": "Supported: PNG, JPG, PDF — max 10 MB",
+    "fileAttached": "File attached: {{name}}",
+    "removeFile": "Remove",
     "submit": "Publish Post",
     "submitting": "Publishing...",
     "success": "Post published! ID: {{postId}}",

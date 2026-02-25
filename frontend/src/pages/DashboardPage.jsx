@@ -13,12 +13,12 @@ export default function DashboardPage() {
       link: '/venues',
       icon: '🏪',
     },
-    {
+    ...(isAdmin ? [{
       titleKey: 'dashboard.cards.templates.title',
       descKey: 'dashboard.cards.templates.description',
       link: '/venue/templates',
       icon: '📄',
-    },
+    }] : []),
     {
       titleKey: 'dashboard.cards.history.title',
       descKey: 'dashboard.cards.history.description',

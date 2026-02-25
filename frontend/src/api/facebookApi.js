@@ -11,8 +11,17 @@ export const getOAuthLoginUrl = (venueName) =>
 
 /**
  * POST /facebook/post
- * @param {{ connectionId: string, message: string, photoUrl?: string }} data
+ * @param {{ connectionId: string, message: string, photoUrl?: string, base64Photo?: string }} data
  * @returns {Promise<FacebookPostResponse>}
  */
 export const postToFacebook = (data) =>
   client.post('/facebook/post', data).then((r) => r.data);
+
+/**
+ * DELETE /facebook/connection/:connectionId
+ * Disconnects a Facebook Page connection.
+ * @param {string} connectionId
+ * @returns {Promise<void>}
+ */
+export const disconnectFacebook = (connectionId) =>
+  client.delete(`/facebook/connection/${connectionId}`);

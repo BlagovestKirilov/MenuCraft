@@ -10,12 +10,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.UUID;
 
 import java.net.URI;
 import java.net.URLEncoder;
@@ -25,9 +29,10 @@ import java.nio.charset.StandardCharsets;
  * REST controller for the Facebook Page integration.
  * <p>
  * Endpoints:
- * GET  /facebook/oauth/login?venueName=...       → Generate Facebook login URL
- * GET  /facebook/oauth/callback?code=...&state=.. → OAuth callback (from Facebook redirect)
- * POST /facebook/post                            → Post to a connected Facebook Page
+ * GET    /facebook/oauth/login?venueName=...       → Generate Facebook login URL
+ * GET    /facebook/oauth/callback?code=...&state=.. → OAuth callback (from Facebook redirect)
+ * POST   /facebook/post                            → Post to a connected Facebook Page
+ * DELETE /facebook/connection/{connectionId}        → Disconnect a Facebook Page
  */
 @Log4j2
 @RequiredArgsConstructor
@@ -100,5 +105,20 @@ public class FacebookController {
     public ResponseEntity<FacebookPostResponse> post(@Valid @RequestBody FacebookPostRequest request) {
         FacebookPostResponse response = facebookPostingService.post(request);
         return ResponseEntity.ok(response);
+    }
+
+    // ───────────────────── Disconnect ─────────────────────
+
+    /**
+     * Disconnects a Facebook Page connection by marking it as DISCONNECTED
+     * and clearing the stored token.
+     *
+     * @param connectionId the UUID of the connection to disconnect
+     * @return 204 No Content on success
+     */
+    @DeleteMapping("/connection/{connectionId}")
+    public ResponseEntity<Void> disconnect(@PathVariable UUID connectionId) {
+        facebookOAuthService.disconnect(connectionId);
+        return ResponseEntity.noContent().build();
     }
 }

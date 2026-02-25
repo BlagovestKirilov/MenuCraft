@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -212,6 +213,27 @@ public class FacebookOAuthService {
         }
 
         return result;
+    }
+
+    // ───────────────────── Disconnect ─────────────────────
+
+    /**
+     * Disconnects a Facebook Page connection by marking it as DISCONNECTED
+     * and clearing the stored encrypted token.
+     *
+     * @param connectionId the UUID of the connection to disconnect
+     */
+    @Transactional
+    public void disconnect(UUID connectionId) {
+        FacebookConnection connection = facebookConnectionRepository.findById(connectionId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        String.format(ExceptionConstants.FACEBOOK_CONNECTION_NOT_FOUND, connectionId)));
+
+        connection.setStatus(FacebookConnectionStatus.DISCONNECTED);
+        connection.setEncryptedPageToken("");
+        facebookConnectionRepository.save(connection);
+
+        log.info("Facebook connection {} for page '{}' disconnected", connectionId, connection.getPageName());
     }
 
     // ───────────────────── Helpers ─────────────────────

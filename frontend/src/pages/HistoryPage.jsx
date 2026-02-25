@@ -23,6 +23,7 @@ export default function HistoryPage() {
   const [previewPdf, setPreviewPdf] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
   const [previewName, setPreviewName] = useState('');
+  const [previewVenueName, setPreviewVenueName] = useState('');
 
   // Facebook connections (all active across all venues)
   const [activeConnections, setActiveConnections] = useState([]);
@@ -99,6 +100,7 @@ export default function HistoryPage() {
       setPreviewPdf(detail.data);
       setPreviewImage(detail.previewImage || null);
       setPreviewName(menu.templateName);
+      setPreviewVenueName(menu.venueName || '');
     } catch (err) {
       setError(getErrorMessage(err));
     } finally {
@@ -116,6 +118,7 @@ export default function HistoryPage() {
     setPreviewPdf(null);
     setPreviewImage(null);
     setPreviewName('');
+    setPreviewVenueName('');
     setShowPostForm(false);
     setPostMessage('');
     setPostError('');
@@ -238,80 +241,90 @@ export default function HistoryPage() {
               style={{ width: '100%', height: '60vh', border: 'none', borderRadius: 'var(--radius)', marginBottom: '1rem' }}
             />
 
-            <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-              <button className="btn btn-primary" onClick={handleDownload}>
-                {t('common.download')}
-              </button>
-              {activeConnections.length > 0 && !showPostForm && (
-                <button className="btn btn-facebook" onClick={() => setShowPostForm(true)}>
-                  {t('menuGenerator.postToFacebook')}
-                </button>
-              )}
-            </div>
+            {(() => {
+              const venueConns = activeConnections.filter((c) => c.venueName === previewVenueName);
+              return (
+                <>
+                  <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+                    <button className="btn btn-primary" onClick={handleDownload}>
+                      {t('common.download')}
+                    </button>
+                    {venueConns.length > 0 && !showPostForm && (
+                      <button className="btn btn-facebook" onClick={() => {
+                        setSelectedConnection(venueConns[0].id);
+                        setShowPostForm(true);
+                      }}>
+                        {t('menuGenerator.postToFacebook')}
+                      </button>
+                    )}
+                  </div>
 
-            {postSuccess && (
-              <div className="alert alert-success" style={{ marginTop: '1rem' }}>
-                {postSuccess}
-              </div>
-            )}
-
-            {showPostForm && (
-              <div style={{ marginTop: '1rem', padding: '1rem', background: 'var(--color-bg)', borderRadius: 'var(--radius)', border: '1px solid var(--color-border)' }}>
-                <h4 style={{ marginBottom: '0.75rem' }}>{t('menuGenerator.postToFacebook')}</h4>
-
-                {postError && <ErrorAlert message={postError} onClose={() => setPostError('')} />}
-
-                <form onSubmit={handlePostToFacebook}>
-                  {activeConnections.length > 1 && (
-                    <div className="form-group" style={{ marginBottom: '0.75rem' }}>
-                      <label>{t('menuGenerator.selectPage')}</label>
-                      <select
-                        className="form-control"
-                        value={selectedConnection}
-                        onChange={(e) => setSelectedConnection(e.target.value)}
-                      >
-                        {activeConnections.map((c) => (
-                          <option key={c.id} value={c.id}>{c.pageName} ({c.venueName})</option>
-                        ))}
-                      </select>
+                  {postSuccess && (
+                    <div className="alert alert-success" style={{ marginTop: '1rem' }}>
+                      {postSuccess}
                     </div>
                   )}
 
-                  {activeConnections.length === 1 && (
-                    <p className="text-secondary" style={{ fontSize: '0.85rem', marginBottom: '0.5rem' }}>
-                      {t('menuGenerator.postingTo')}: <strong>{activeConnections[0].pageName}</strong>
-                    </p>
+                  {showPostForm && (
+                    <div style={{ marginTop: '1rem', padding: '1rem', background: 'var(--color-bg)', borderRadius: 'var(--radius)', border: '1px solid var(--color-border)' }}>
+                      <h4 style={{ marginBottom: '0.75rem' }}>{t('menuGenerator.postToFacebook')}</h4>
+
+                      {postError && <ErrorAlert message={postError} onClose={() => setPostError('')} />}
+
+                      <form onSubmit={handlePostToFacebook}>
+                        {venueConns.length > 1 && (
+                          <div className="form-group" style={{ marginBottom: '0.75rem' }}>
+                            <label>{t('menuGenerator.selectPage')}</label>
+                            <select
+                              className="form-control"
+                              value={selectedConnection}
+                              onChange={(e) => setSelectedConnection(e.target.value)}
+                            >
+                              {venueConns.map((c) => (
+                                <option key={c.id} value={c.id}>{c.pageName}</option>
+                              ))}
+                            </select>
+                          </div>
+                        )}
+
+                        {venueConns.length === 1 && (
+                          <p className="text-secondary" style={{ fontSize: '0.85rem', marginBottom: '0.5rem' }}>
+                            {t('menuGenerator.postingTo')}: <strong>{venueConns[0].pageName}</strong>
+                          </p>
+                        )}
+
+                        <div className="form-group" style={{ marginBottom: '0.75rem' }}>
+                          <label>{t('menuGenerator.postMessageLabel')}</label>
+                          <textarea
+                            className="form-control"
+                            rows={3}
+                            value={postMessage}
+                            onChange={(e) => setPostMessage(e.target.value)}
+                            placeholder={t('menuGenerator.postMessagePlaceholder')}
+                            required
+                          />
+                        </div>
+
+                        {previewImage && (
+                          <p className="text-secondary" style={{ fontSize: '0.8rem', marginBottom: '0.75rem' }}>
+                            {t('menuGenerator.imageAttached')}
+                          </p>
+                        )}
+
+                        <div style={{ display: 'flex', gap: '0.5rem' }}>
+                          <button type="submit" className="btn btn-facebook" disabled={postLoading}>
+                            {postLoading ? t('menuGenerator.posting') : t('menuGenerator.publishPost')}
+                          </button>
+                          <button type="button" className="btn btn-secondary" onClick={() => setShowPostForm(false)}>
+                            {t('common.cancel')}
+                          </button>
+                        </div>
+                      </form>
+                    </div>
                   )}
-
-                  <div className="form-group" style={{ marginBottom: '0.75rem' }}>
-                    <label>{t('menuGenerator.postMessageLabel')}</label>
-                    <textarea
-                      className="form-control"
-                      rows={3}
-                      value={postMessage}
-                      onChange={(e) => setPostMessage(e.target.value)}
-                      placeholder={t('menuGenerator.postMessagePlaceholder')}
-                      required
-                    />
-                  </div>
-
-                  {previewImage && (
-                    <p className="text-secondary" style={{ fontSize: '0.8rem', marginBottom: '0.75rem' }}>
-                      {t('menuGenerator.imageAttached')}
-                    </p>
-                  )}
-
-                  <div style={{ display: 'flex', gap: '0.5rem' }}>
-                    <button type="submit" className="btn btn-facebook" disabled={postLoading}>
-                      {postLoading ? t('menuGenerator.posting') : t('menuGenerator.publishPost')}
-                    </button>
-                    <button type="button" className="btn btn-secondary" onClick={() => setShowPostForm(false)}>
-                      {t('common.cancel')}
-                    </button>
-                  </div>
-                </form>
-              </div>
-            )}
+                </>
+              );
+            })()}
           </div>
         </div>
       )}

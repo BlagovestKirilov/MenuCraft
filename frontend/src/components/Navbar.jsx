@@ -19,7 +19,9 @@ export default function Navbar() {
             <>
               <NavLink to="/dashboard">{t('nav.dashboard')}</NavLink>
               <NavLink to="/venues">{t('nav.venues')}</NavLink>
-              <NavLink to="/venue/templates">{t('nav.templates')}</NavLink>
+              {isAdmin && (
+                <NavLink to="/venue/templates">{t('nav.templates')}</NavLink>
+              )}
               <NavLink to="/history">{t('nav.history')}</NavLink>
               {isAdmin && (
                 <NavLink to="/admin/register">{t('nav.adminRegister')}</NavLink>

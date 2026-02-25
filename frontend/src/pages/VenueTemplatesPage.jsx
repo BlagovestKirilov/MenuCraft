@@ -15,6 +15,7 @@ export default function VenueTemplatesPage() {
   const didFetch = useRef(false);
 
   const initialVenue = searchParams.get('venue') || '';
+  const venueLockedFromUrl = !!searchParams.get('venue');
 
   const [venues, setVenues] = useState([]);
   const [venueName, setVenueName] = useState(initialVenue);
@@ -119,11 +120,15 @@ export default function VenueTemplatesPage() {
       <div className="card" style={{ maxWidth: 960 }}>
         <div className="form-group" style={{ marginBottom: '1rem' }}>
           <label>{t('venueTemplates.venueLabel')}</label>
-          <select className="form-control" value={venueName} onChange={handleVenueChange}>
-            {venues.map((v) => (
-              <option key={v.name} value={v.name}>{v.name}</option>
-            ))}
-          </select>
+          {venueLockedFromUrl ? (
+            <input className="form-control" value={venueName} readOnly />
+          ) : (
+            <select className="form-control" value={venueName} onChange={handleVenueChange}>
+              {venues.map((v) => (
+                <option key={v.name} value={v.name}>{v.name}</option>
+              ))}
+            </select>
+          )}
         </div>
 
         <ErrorAlert message={error} onClose={() => setError('')} />
