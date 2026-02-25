@@ -180,11 +180,13 @@ export default function HistoryPage() {
       {loading && <LoadingSpinner />}
 
       {!loading && menus.length === 0 && !error && (
-        <div className="card text-center" style={{ padding: '3rem 2rem' }}>
-          <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📋</div>
-          <p className="text-secondary" style={{ fontSize: '1.1rem' }}>
-            {t('history.noMenus')}
-          </p>
+        <div className="card" style={{ maxWidth: 800, marginBottom: '1.5rem' }}>
+          <div className="form-group" style={{ marginBottom: 0, textAlign: 'center', padding: '2rem' }}>
+            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📋</div>
+            <p className="text-secondary" style={{ fontSize: '1.1rem', margin: 0 }}>
+              {t('history.noMenus')}
+            </p>
+          </div>
         </div>
       )}
 
