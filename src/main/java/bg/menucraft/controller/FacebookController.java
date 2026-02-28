@@ -8,6 +8,7 @@ import bg.menucraft.service.FacebookPostingService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -43,6 +44,9 @@ public class FacebookController {
     private final FacebookOAuthService facebookOAuthService;
     private final FacebookPostingService facebookPostingService;
 
+    @Value("${app.frontend-url}")
+    private String frontendUrl;
+
     // ───────────────────── OAuth Endpoints ─────────────────────
 
     /**
@@ -74,7 +78,7 @@ public class FacebookController {
 
         FacebookOAuthResponse response = facebookOAuthService.handleCallback(code, state);
 
-        String frontendBase = "http://localhost:5173/facebook/oauth/callback";
+        String frontendBase = frontendUrl + "/facebook/oauth/callback";
         String redirect = frontendBase
                 + "?status=" + encode(response.status())
                 + "&pages=" + encode(String.valueOf(response.pages() != null ? response.pages().size() : 0));

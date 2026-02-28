@@ -1,0 +1,26 @@
+services:
+  frontend:
+    image: ${DOCKERHUB_USERNAME}/menucraft_frontend:latest
+    container_name: menucraft_frontend
+    restart: always
+    environment:
+      - TZ=Europe/Sofia
+    networks:
+      - web
+
+  backend:
+    image: ${DOCKERHUB_USERNAME}/menucraft_backend:latest
+    container_name: menucraft_backend
+    restart: always
+    env_file: .env
+    volumes:
+      - /home/ubuntu/menucraft/backend_logs:/app/logs
+    environment:
+      - TZ=Europe/Sofia
+      - JAVA_OPTS=-Duser.timezone=Europe/Sofia
+    networks:
+      - web
+
+networks:
+  web:
+    external: true

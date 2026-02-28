@@ -38,3 +38,5 @@ build/
 /src/main/resources/mds
 
 /logs
+
+/src/main/resources/santase_service_configs
