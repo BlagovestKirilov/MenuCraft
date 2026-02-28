@@ -16,9 +16,13 @@ FROM eclipse-temurin:25-jre-noble
 
 # Create a non-privileged user for security
 RUN useradd -ms /bin/sh springuser
-USER springuser
 
 WORKDIR /app
+
+# Create logs directory with correct ownership before switching user
+RUN mkdir -p /app/logs && chown springuser:springuser /app/logs
+
+USER springuser
 
 # Copy the JAR from the builder stage
 COPY --from=builder /build/target/*.jar app.jar
