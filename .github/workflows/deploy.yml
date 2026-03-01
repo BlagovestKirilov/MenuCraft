@@ -48,7 +48,7 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ubuntu
           key: ${{ secrets.EC2_KEY }}
-          source: "docker-compose.yml,elk/docker-compose.yml,elk/filebeat.yml"
+          source: "docker-compose.yml"
           target: "/home/ubuntu/menucraft"
 
       # ── Deploy on EC2 ──
@@ -82,6 +82,10 @@ jobs:
             DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}
             EOF
 
+            echo "Ensuring logs directory exists..."
+            mkdir -p /home/ubuntu/menucraft/backend_logs
+            chmod 777 /home/ubuntu/menucraft/backend_logs
+
             echo "Ensuring shared network exists..."
             docker network create web 2>/dev/null || true
 
@@ -90,12 +94,6 @@ jobs:
 
             echo "Restarting MenuCraft containers..."
             docker compose up -d --force-recreate --remove-orphans
-
-            echo "Starting ELK stack..."
-            cd /home/ubuntu/menucraft/elk
-            docker compose pull
-            docker compose up -d
-            cd /home/ubuntu/menucraft
 
             echo "Reloading nginx proxy..."
             docker exec nginx_proxy nginx -s reload 2>/dev/null || echo "Proxy not running yet, skipping reload."
