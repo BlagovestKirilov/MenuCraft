@@ -1,5 +1,7 @@
 # ---- Build Stage ----
 FROM eclipse-temurin:25-jdk-noble AS builder
+ARG SENTRY_AUTH_TOKEN
+ENV SENTRY_AUTH_TOKEN=${SENTRY_AUTH_TOKEN}
 WORKDIR /build
 
 # Better caching: only re-run if dependencies change

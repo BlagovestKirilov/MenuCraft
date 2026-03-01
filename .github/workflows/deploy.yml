@@ -34,7 +34,7 @@ jobs:
       # ── Backend Docker Image ──
       - name: Build and push backend image
         run: |
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/menucraft_backend:latest .
+          docker build --build-arg SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }} -t ${{ secrets.DOCKERHUB_USERNAME }}/menucraft_backend:latest .
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/menucraft_backend:latest
 
       # ── Frontend Docker Image ──
