@@ -3,6 +3,7 @@ package bg.menucraft.exception;
 import bg.menucraft.constant.ExceptionConstants;
 import bg.menucraft.constant.LoggingConstants;
 import bg.menucraft.model.response.ApiResponse;
+import io.sentry.Sentry;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -55,6 +56,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MenuGenerationException.class)
     public ResponseEntity<ApiResponse> handleMenuGeneration(MenuGenerationException ex) {
         log.error(LoggingConstants.EXCEPTION_MENU_GENERATION, ex.getMessage());
+        Sentry.captureException(ex);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ApiResponse.error(ex.getMessage()));
     }
@@ -62,6 +64,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(EncryptionException.class)
     public ResponseEntity<ApiResponse> handleEncryption(EncryptionException ex) {
         log.error(LoggingConstants.EXCEPTION_UNHANDLED, ex.getMessage(), ex);
+        Sentry.captureException(ex);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ApiResponse.error(ExceptionConstants.INTERNAL_SERVER_ERROR));
     }
@@ -87,6 +90,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalStateException.class)
     public ResponseEntity<ApiResponse> handleIllegalState(IllegalStateException ex) {
         log.error(LoggingConstants.EXCEPTION_UNHANDLED, ex.getMessage());
+        Sentry.captureException(ex);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ApiResponse.error(ex.getMessage()));
     }
@@ -94,6 +98,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse> handleGeneric(Exception ex) {
         log.error(LoggingConstants.EXCEPTION_UNHANDLED, ex.getMessage(), ex);
+        Sentry.captureException(ex);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ApiResponse.error(ExceptionConstants.INTERNAL_SERVER_ERROR));
     }
