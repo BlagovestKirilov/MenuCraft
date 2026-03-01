@@ -7,12 +7,29 @@
     </Properties>
 
     <Appenders>
-        <!-- Console appender -->
+        <!-- Console appender (human-readable) -->
         <Console name="Console" target="SYSTEM_OUT">
             <PatternLayout pattern="${LOG_PATTERN}" />
         </Console>
 
-        <!-- Rolling file appender: daily rotation, keep 7 days -->
+        <!-- JSON file appender for ELK stack -->
+        <RollingFile name="JsonFile"
+                     fileName="${LOG_DIR}/menucraft.json"
+                     filePattern="${LOG_DIR}/menucraft-%d{yyyy-MM-dd}.json.gz">
+            <JsonTemplateLayout eventTemplateUri="classpath:EcsLayout.json" />
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true" />
+                <SizeBasedTriggeringPolicy size="50MB" />
+            </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${LOG_DIR}" maxDepth="1">
+                    <IfFileName glob="menucraft-*.json.gz" />
+                    <IfLastModified age="7d" />
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingFile>
+
+        <!-- Plain text file appender -->
         <RollingFile name="RollingFile"
                      fileName="${LOG_DIR}/menucraft.log"
                      filePattern="${LOG_DIR}/menucraft-%d{yyyy-MM-dd}.log.gz">
@@ -34,23 +51,27 @@
         <Logger name="bg.menucraft" level="INFO" additivity="false">
             <AppenderRef ref="Console" />
             <AppenderRef ref="RollingFile" />
+            <AppenderRef ref="JsonFile" />
         </Logger>
 
         <!-- Hibernate SQL -->
         <Logger name="org.hibernate.SQL" level="INFO" additivity="false">
             <AppenderRef ref="Console" />
             <AppenderRef ref="RollingFile" />
+            <AppenderRef ref="JsonFile" />
         </Logger>
 
         <!-- Spring framework -->
         <Logger name="org.springframework" level="WARN" additivity="false">
             <AppenderRef ref="Console" />
             <AppenderRef ref="RollingFile" />
+            <AppenderRef ref="JsonFile" />
         </Logger>
 
         <Root level="WARN">
             <AppenderRef ref="Console" />
             <AppenderRef ref="RollingFile" />
+            <AppenderRef ref="JsonFile" />
         </Root>
     </Loggers>
 
