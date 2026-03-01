@@ -44,6 +44,11 @@
         </dependency>
 
         <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-layout-template-json</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
@@ -110,11 +115,6 @@
             <scope>test</scope>
         </dependency>
 
-        <dependency>
-            <groupId>io.sentry</groupId>
-            <artifactId>sentry-async-profiler</artifactId>
-            <version>8.33.0</version>
-        </dependency>
     </dependencies>
 
     <build>
@@ -147,25 +147,6 @@
                         </exclude>
                     </excludes>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>io.sentry</groupId>
-                <artifactId>sentry-maven-plugin</artifactId>
-                <version>0.10.0</version>
-                <extensions>true</extensions>
-                <configuration>
-                    <debugSentryCli>true</debugSentryCli>
-                    <org>blagovests-company</org>
-                    <project>menu-craft</project>
-                    <authToken>${env.SENTRY_AUTH_TOKEN}</authToken>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>uploadSourceBundle</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>
