@@ -82,10 +82,6 @@ jobs:
             DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}
             EOF
 
-            echo "Ensuring logs directory exists..."
-            mkdir -p /home/ubuntu/menucraft/backend_logs
-            chmod 777 /home/ubuntu/menucraft/backend_logs
-
             echo "Ensuring shared network exists..."
             docker network create web 2>/dev/null || true
 
