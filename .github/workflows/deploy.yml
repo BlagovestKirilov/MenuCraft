@@ -83,10 +83,6 @@ jobs:
             SENTRY_DSN=${{ secrets.SENTRY_DSN }}
             EOF
 
-            echo "Ensuring logs directory exists with correct permissions..."
-            mkdir -p /home/ubuntu/menucraft/backend_logs
-            chmod 777 /home/ubuntu/menucraft/backend_logs
-
             echo "Ensuring shared network exists..."
             docker network create web 2>/dev/null || true
 
