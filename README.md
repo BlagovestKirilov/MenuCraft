@@ -1,6 +1,6 @@
 # MenuCraft
 
-MenuCraft is a full-stack application for venues to manage menu templates and generate filled menu PDFs. It includes authentication (JWT), role-based access control, menu generation with PDF templates, generation history, and Facebook Page integration for publishing posts.
+[menucraft.online](https://menucraft.online) — MenuCraft is a full-stack application for venues to manage menu templates and generate filled menu PDFs. It includes authentication (JWT), role-based access control, menu generation with PDF templates, generation history, and Facebook Page integration for publishing posts.
 
 ## Tech stack
 
@@ -20,8 +20,6 @@ MenuCraft is a full-stack application for venues to manage menu templates and ge
 - Axios
 - React Router
 - i18next
-
-The Vite dev server is configured to proxy `/api/*` to `http://localhost:8080`.
 
 ## Repository structure
 
