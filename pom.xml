@@ -12,19 +12,6 @@
     <version>0.0.1</version>
     <name>MenuCraft</name>
     <description>MenuCraft</description>
-    <url/>
-    <licenses>
-        <license/>
-    </licenses>
-    <developers>
-        <developer/>
-    </developers>
-    <scm>
-        <connection/>
-        <developerConnection/>
-        <tag/>
-        <url/>
-    </scm>
     <properties>
         <java.version>25</java.version>
     </properties>
@@ -128,6 +115,12 @@
             <artifactId>sentry-spring-boot-4</artifactId>
             <version>8.33.0</version>
         </dependency>
+
+        <dependency>
+            <groupId>io.sentry</groupId>
+            <artifactId>sentry-async-profiler</artifactId>
+            <version>8.33.0</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -160,6 +153,25 @@
                         </exclude>
                     </excludes>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>io.sentry</groupId>
+                <artifactId>sentry-maven-plugin</artifactId>
+                <version>0.10.0</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <debugSentryCli>true</debugSentryCli>
+                    <org>blagovests-company</org>
+                    <project>menu-craft</project>
+                    <authToken>${env.SENTRY_AUTH_TOKEN}</authToken>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>uploadSourceBundle</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
