@@ -22,6 +22,9 @@ WORKDIR /app
 # Create logs directory with correct ownership before switching user
 RUN mkdir -p /app/logs && chown springuser:springuser /app/logs
 
+# Download Sentry OpenTelemetry agent
+ADD --chown=springuser:springuser https://repo1.maven.org/maven2/io/sentry/sentry-opentelemetry-agent/8.33.0/sentry-opentelemetry-agent-8.33.0.jar /app/sentry-agent.jar
+
 USER springuser
 
 # Copy the JAR from the builder stage
@@ -29,5 +32,7 @@ COPY --from=builder /build/target/*.jar app.jar
 
 EXPOSE 8090
 
+ENV SENTRY_AUTO_INIT=false
+
 # Use array syntax for ENTRYPOINT
-ENTRYPOINT ["java", "-jar", "app.jar", "--spring.profiles.active=prod"]
+ENTRYPOINT ["java", "-javaagent:/app/sentry-agent.jar", "-jar", "app.jar", "--spring.profiles.active=prod"]
