@@ -18,13 +18,14 @@ services:
     environment:
       - TZ=Europe/Sofia
       - JAVA_OPTS=-Duser.timezone=Europe/Sofia
-      - ELASTIC_APM_SERVICE_NAME=MenuCraft
-      - ELASTIC_APM_ENVIRONMENT=production
-      - ELASTIC_APM_SERVER_URL=${ELASTIC_APM_SERVER_URL}
-      - ELASTIC_APM_API_KEY=${ELASTIC_APM_API_KEY}
-      - ELASTIC_APM_APPLICATION_PACKAGES=bg.menucraft
-      - ELASTIC_APM_LOG_SENDING=true
-      - ELASTIC_APM_LOG_ECS_REFORMATTING=OVERRIDE
+      - OTEL_SERVICE_NAME=MenuCraft
+      - OTEL_RESOURCE_ATTRIBUTES=deployment.environment=production
+      - OTEL_EXPORTER_OTLP_ENDPOINT=${ELASTIC_APM_SERVER_URL}
+      - OTEL_EXPORTER_OTLP_HEADERS=Authorization=ApiKey ${ELASTIC_APM_API_KEY}
+      - OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf
+      - OTEL_LOGS_EXPORTER=otlp
+      - OTEL_METRICS_EXPORTER=otlp
+      - OTEL_TRACES_EXPORTER=otlp
     networks:
       - web
 
