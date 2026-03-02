@@ -22,9 +22,9 @@ WORKDIR /app
 # Create logs directory with correct ownership before switching user
 RUN mkdir -p /app/logs && chown springuser:springuser /app/logs
 
-# Download Elastic APM Java Agent (update version as needed: https://mvnrepository.com/artifact/co.elastic.apm/elastic-apm-agent)
-ADD https://repo1.maven.org/maven2/co/elastic/apm/elastic-apm-agent/1.49.0/elastic-apm-agent-1.49.0.jar /app/elastic-apm-agent.jar
-RUN chown springuser:springuser /app/elastic-apm-agent.jar
+# Download OpenTelemetry Java Agent
+ADD https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/latest/download/opentelemetry-javaagent.jar /app/opentelemetry-javaagent.jar
+RUN chown springuser:springuser /app/opentelemetry-javaagent.jar
 
 USER springuser
 
@@ -34,4 +34,4 @@ COPY --from=builder /build/target/*.jar app.jar
 EXPOSE 8090
 
 # Use array syntax for ENTRYPOINT
-ENTRYPOINT ["java", "-javaagent:/app/elastic-apm-agent.jar", "-jar", "app.jar", "--spring.profiles.active=prod"]
+ENTRYPOINT ["java", "-javaagent:/app/opentelemetry-javaagent.jar", "-jar", "app.jar", "--spring.profiles.active=prod"]
