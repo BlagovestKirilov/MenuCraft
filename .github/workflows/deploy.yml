@@ -80,6 +80,8 @@ jobs:
             GRAPH_API_URL=${{ secrets.GRAPH_API_URL }}
             AES_ENCRYPTION_SECRET=${{ secrets.AES_ENCRYPTION_SECRET }}
             DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}
+            ELASTIC_APM_SERVER_URL=${{ secrets.ELASTIC_APM_SERVER_URL }}
+            ELASTIC_APM_API_KEY=${{ secrets.ELASTIC_APM_API_KEY }}
             EOF
 
             echo "Ensuring shared network exists..."
