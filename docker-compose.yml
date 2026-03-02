@@ -18,6 +18,12 @@ services:
     environment:
       - TZ=Europe/Sofia
       - JAVA_OPTS=-Duser.timezone=Europe/Sofia
+      - ELASTIC_APM_SERVICE_NAME=MenuCraft
+      - ELASTIC_APM_ENVIRONMENT=production
+      - ELASTIC_APM_SERVER_URL=${ELASTIC_APM_SERVER_URL}
+      - ELASTIC_APM_API_KEY=${ELASTIC_APM_API_KEY}
+      - ELASTIC_APM_APPLICATION_PACKAGES=bg.menucraft
+      - ELASTIC_APM_LOG_SENDING=true
     networks:
       - web
 
