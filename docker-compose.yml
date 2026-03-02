@@ -24,6 +24,7 @@ services:
       - ELASTIC_APM_API_KEY=${ELASTIC_APM_API_KEY}
       - ELASTIC_APM_APPLICATION_PACKAGES=bg.menucraft
       - ELASTIC_APM_LOG_SENDING=true
+      - ELASTIC_APM_LOG_ECS_REFORMATTING=OVERRIDE
     networks:
       - web
 
