@@ -45,6 +45,11 @@ export default function AdminTemplatePage() {
   const handleChange = (name, value) => setForm((f) => ({ ...f, [name]: value }));
 
   const handleFileSelect = async (file) => {
+    if (file && file.type !== 'application/pdf') {
+      setError(t('adminTemplate.pdfOnly'));
+      setFileBase64('');
+      return;
+    }
     const b64 = await fileToBase64(file);
     setFileBase64(b64);
   };

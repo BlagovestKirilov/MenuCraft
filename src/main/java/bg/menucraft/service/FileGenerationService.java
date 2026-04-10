@@ -6,7 +6,9 @@ import bg.menucraft.constant.LoggingConstants;
 import bg.menucraft.exception.MenuGenerationException;
 import bg.menucraft.exception.ResourceNotFoundException;
 import bg.menucraft.model.Template;
+import bg.menucraft.model.ai.ItemLayout;
 import bg.menucraft.model.ai.MenuLayoutResponse;
+import bg.menucraft.model.ai.SectionLayout;
 import bg.menucraft.model.ai.SectionRegion;
 import bg.menucraft.model.dto.MealDto;
 import bg.menucraft.model.request.MenuGenerationRequest;
@@ -291,22 +293,25 @@ public class FileGenerationService {
         try (PDPageContentStream cs = new PDPageContentStream(
                 document, page, PDPageContentStream.AppendMode.APPEND, true, true)) {
 
-            for (MenuLayoutResponse.SectionLayout section : layout.sections()) {
+            for (SectionLayout section : layout.sections()) {
                 SectionRegion region = regions.get(section.type());
                 if (region == null) continue;
 
                 float fontSize = section.fontSize();
 
-                // Draw section title
+                // Draw section title (centered across name + price columns)
                 if (section.title() != null && !section.title().isBlank()) {
+                    float titleWidth = font.getStringWidth(section.title()) / 1000 * section.titleFontSize();
+                    float totalSectionWidth = (region.priceX() + region.priceWidth()) - region.nameX();
+                    float titleX = region.nameX() + (totalSectionWidth - titleWidth) / 2;
                     cs.beginText();
                     cs.setFont(font, section.titleFontSize());
-                    cs.newLineAtOffset(region.nameX(), section.titleY());
+                    cs.newLineAtOffset(titleX, section.titleY());
                     cs.showText(section.title());
                     cs.endText();
                 }
 
-                for (MenuLayoutResponse.ItemLayout item : section.items()) {
+                for (ItemLayout item : section.items()) {
                     // Draw item name
                     cs.beginText();
                     cs.setFont(font, fontSize);

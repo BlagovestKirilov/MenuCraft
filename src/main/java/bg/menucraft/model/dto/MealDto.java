@@ -5,6 +5,7 @@ import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,6 +20,7 @@ public class MealDto {
 
     @NotBlank(message = ValidationConstants.MEAL_NAME_REQUIRED)
     @Size(max = 100, message = ValidationConstants.MEAL_NAME_SIZE)
+    @Pattern(regexp = ValidationConstants.MEAL_NAME_PATTERN, message = ValidationConstants.MEAL_NAME_PATTERN_MSG)
     private String name;
 
     @NotNull(message = ValidationConstants.MEAL_PRICE_REQUIRED)

@@ -7,21 +7,4 @@ import java.util.List;
  * Returned by the OpenAI API (or by the fallback calculator).
  */
 public record MenuLayoutResponse(List<SectionLayout> sections) {
-
-    public record SectionLayout(
-            String type,
-            String title,
-            float titleY,
-            float titleFontSize,
-            float fontSize,
-            List<ItemLayout> items
-    ) {
-    }
-
-    public record ItemLayout(
-            String name,
-            String price,
-            float y
-    ) {
-    }
 }

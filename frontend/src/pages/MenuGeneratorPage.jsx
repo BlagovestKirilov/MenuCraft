@@ -16,6 +16,9 @@ function MealListBuilder({ label, meals, onChange, maxCount, t }) {
   };
   const removeMeal = (i) => onChange(meals.filter((_, idx) => idx !== i));
   const updateMeal = (i, field, val) => {
+    if (field === 'name') {
+      val = val.replace(/[\u045D\u040D]/g, '\u0438');
+    }
     const copy = [...meals];
     copy[i] = { ...copy[i], [field]: val };
     onChange(copy);

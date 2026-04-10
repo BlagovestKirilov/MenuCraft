@@ -51,6 +51,8 @@ public class ValidationConstants {
 
     public static final String MEAL_NAME_REQUIRED = "Meal name is required";
     public static final String MEAL_NAME_SIZE = "Meal name must not exceed {max} characters";
+    public static final String MEAL_NAME_PATTERN = "^[\\p{L}\\p{N}\\p{P}\\p{Z}&&[^\u045D\u040D]]+$";
+    public static final String MEAL_NAME_PATTERN_MSG = "Meal name contains unsupported characters (ѝ is not allowed — use и instead)";
     public static final String MEAL_PRICE_REQUIRED = "Meal price is required";
     public static final String MEAL_PRICE_MIN = "Meal price must be greater than 0";
     public static final String MEAL_PRICE_FORMAT = "Meal price must have up to {integer} digits and {fraction} decimal places";

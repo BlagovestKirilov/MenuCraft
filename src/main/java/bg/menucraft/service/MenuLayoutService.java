@@ -1,9 +1,9 @@
 package bg.menucraft.service;
 
 import bg.menucraft.config.OpenAiProperties;
+import bg.menucraft.model.ai.ItemLayout;
 import bg.menucraft.model.ai.MenuLayoutResponse;
-import bg.menucraft.model.ai.MenuLayoutResponse.ItemLayout;
-import bg.menucraft.model.ai.MenuLayoutResponse.SectionLayout;
+import bg.menucraft.model.ai.SectionLayout;
 import bg.menucraft.model.ai.SectionRegion;
 import bg.menucraft.model.dto.MealDto;
 import com.fasterxml.jackson.databind.JsonNode;
