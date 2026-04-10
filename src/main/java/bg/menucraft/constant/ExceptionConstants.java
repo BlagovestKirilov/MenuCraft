@@ -18,7 +18,6 @@ public class ExceptionConstants {
     public static final String TEMPLATE_NOT_FOUND = "Template not found: %s";
     public static final String TEMPLATE_NAME_EXISTS = "A template with name '%s' already exists";
     public static final String TEMPLATE_NO_DATA = "Template has no data: %s";
-    public static final String TEMPLATE_NO_ACROFORM = "PDF template has no fillable form fields";
 
     // Menu
     public static final String GENERATED_MENU_NOT_FOUND = "Generated menu not found: %s";
