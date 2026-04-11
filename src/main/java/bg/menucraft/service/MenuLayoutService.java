@@ -40,10 +40,10 @@ public class MenuLayoutService {
 
             SECTION TITLES:
             Each section MUST have a Bulgarian title:
-            - SALAD → "Салати"
-            - SOUP → "Супи"
-            - MAIN_COURSE → "Основни ястия"
-            - DESSERT → "Десерти"
+            - SALAD → "САЛАТИ"
+            - SOUP → "СУПИ"
+            - MAIN_COURSE → "ОСНОВНИ ЯСТИЯ"
+            - DESSERT → "ДЕСЕРТИ"
             The title is placed at the top of the section region. titleY should be near topY (with ~5pt padding).
             titleFontSize should be fontSize + 4 (bold heading, larger than items).
 
@@ -70,7 +70,7 @@ public class MenuLayoutService {
               "sections": [
                 {
                   "type": "SALAD",
-                  "title": "Салати",
+                  "title": "САЛАТИ",
                   "titleY": 470.0,
                   "titleFontSize": 16.0,
                   "fontSize": 12.0,
