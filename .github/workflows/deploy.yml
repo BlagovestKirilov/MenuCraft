@@ -82,6 +82,7 @@ jobs:
             DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}
             ELASTIC_APM_SERVER_URL=${{ secrets.ELASTIC_APM_SERVER_URL }}
             ELASTIC_APM_API_KEY=${{ secrets.ELASTIC_APM_API_KEY }}
+            OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
             EOF
 
             echo "Ensuring shared network exists..."

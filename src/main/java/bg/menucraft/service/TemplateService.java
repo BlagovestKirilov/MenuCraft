@@ -46,10 +46,10 @@ public class TemplateService {
         }
 
         Template template = templateMapper.toEntity(request);
-        template.setData(Base64.getDecoder().decode(request.getData()));
-        template.setContentType(request.getContentType() != null && !request.getContentType().isBlank()
-                ? request.getContentType().trim()
-                : DEFAULT_CONTENT_TYPE);
+        byte[] decodedData = Base64.getDecoder().decode(request.getData());
+        validatePdfContent(decodedData);
+        template.setData(decodedData);
+        template.setContentType(DEFAULT_CONTENT_TYPE);
 
         // Create and add sections
         if (request.getSections() != null && !request.getSections().isEmpty()) {
@@ -96,6 +96,16 @@ public class TemplateService {
         log.info(LoggingConstants.TEMPLATES_FETCHED, templates.size(), venueName);
 
         return new TemplateResponse(templates);
+    }
+
+    /**
+     * Validates that the decoded bytes are a real PDF (starts with %PDF magic bytes).
+     */
+    private void validatePdfContent(byte[] data) {
+        if (data == null || data.length < 4
+                || data[0] != 0x25 || data[1] != 0x50 || data[2] != 0x44 || data[3] != 0x46) {
+            throw new IllegalArgumentException(ExceptionConstants.TEMPLATE_NOT_PDF);
+        }
     }
 
     @Transactional(readOnly = true)

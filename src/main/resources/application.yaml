@@ -36,6 +36,11 @@ facebook:
   redirect-uri: ${FACEBOOK_REDIRECT_URI}
   graph-api-base: ${GRAPH_API_URL}
 
+openai:
+  api-key: ${OPENAI_API_KEY}
+  model: gpt-4o-mini
+  base-url: https://api.openai.com
+
 encryption:
   aes-secret: ${AES_ENCRYPTION_SECRET}
 
@@ -64,7 +69,7 @@ spring:
       max-lifetime: 1800000
       auto-commit: false
       validation-timeout: 3000
-      leak-detection-threshold: 20000
+      leak-detection-threshold: 60000
 
 logging:
   level:

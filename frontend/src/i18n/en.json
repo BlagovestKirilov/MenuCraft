@@ -240,6 +240,7 @@
     "slotsPlaceholder": "Slots",
     "venueName": "Venue *",
     "venueRequired": "Please select a venue.",
+    "pdfOnly": "Only PDF files are allowed.",
     "submit": "Add Template",
     "submitting": "Uploading...",
     "success": "Template added successfully!"

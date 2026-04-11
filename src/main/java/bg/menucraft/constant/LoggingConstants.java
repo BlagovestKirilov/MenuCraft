@@ -63,6 +63,10 @@ public class LoggingConstants {
     public static final String EXCEPTION_DATA_INTEGRITY = "Data integrity violation: {}";
     public static final String EXCEPTION_UNHANDLED = "Unhandled exception: {}";
 
+    // AI layout
+    public static final String AI_LAYOUT_SUCCESS = "AI layout calculated for {} section(s)";
+    public static final String AI_LAYOUT_FALLBACK = "AI layout failed, using fallback: {}";
+
     // JWT filter
     public static final String JWT_PROCESSING_FAILED = "JWT processing failed for request {}: {}";
 }
