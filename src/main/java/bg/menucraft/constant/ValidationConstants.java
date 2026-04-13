@@ -48,6 +48,7 @@ public class ValidationConstants {
     public static final String SALADS_SIZE = "Salads list size must be between {min} and {max}";
     public static final String SOUPS_SIZE = "Soups list size must be between {min} and {max}";
     public static final String MAIN_COURSES_SIZE = "Main courses list size must be between {min} and {max}";
+    public static final String DESSERTS_SIZE = "Desserts list size must not exceed {max}";
 
     public static final String MEAL_NAME_REQUIRED = "Meal name is required";
     public static final String MEAL_NAME_SIZE = "Meal name must not exceed {max} characters";

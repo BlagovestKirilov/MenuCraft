@@ -13,8 +13,8 @@ export default function AdminTemplatePage() {
   const didFetch = useRef(false);
 
   const SECTION_TYPES = [
-    { value: 'SOUP', label: t('adminTemplate.sectionSoup') },
     { value: 'SALAD', label: t('adminTemplate.sectionSalad') },
+    { value: 'SOUP', label: t('adminTemplate.sectionSoup') },
     { value: 'MAIN_COURSE', label: t('adminTemplate.sectionMainCourse') },
     { value: 'DESSERT', label: t('adminTemplate.sectionDessert') },
   ];

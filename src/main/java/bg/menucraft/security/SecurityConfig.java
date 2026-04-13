@@ -49,6 +49,7 @@ public class SecurityConfig {
                         .requestMatchers("/admin/**").hasRole(RoleEnum.ADMIN.toString())
                         .requestMatchers("/venue/**").hasAnyRole(RoleEnum.ADMIN.toString(), RoleEnum.COMPANY.toString())
                         .requestMatchers("/facebook/oauth/**").permitAll()
+                        .requestMatchers("/facebook/data-deletion").permitAll()
                         .requestMatchers("/facebook/**").authenticated()
                         .anyRequest().authenticated()
                 )
