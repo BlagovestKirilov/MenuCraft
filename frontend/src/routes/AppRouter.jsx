@@ -22,6 +22,10 @@ import AdminTemplateListPage from '../pages/AdminTemplateListPage';
 import FacebookCallbackPage from '../pages/FacebookCallbackPage';
 import FacebookPostPage from '../pages/FacebookPostPage';
 
+// Legal pages
+import PrivacyPolicyPage from '../pages/PrivacyPolicyPage';
+import TermsOfServicePage from '../pages/TermsOfServicePage';
+
 export default function AppRouter() {
   return (
     <Routes>
@@ -30,6 +34,12 @@ export default function AppRouter() {
 
       {/* Facebook OAuth callback (public) */}
       <Route path="/facebook/oauth/callback" element={<FacebookCallbackPage />} />
+
+      {/* Legal pages (public, inside main layout) */}
+      <Route element={<MainLayout />}>
+        <Route path="/privacy" element={<PrivacyPolicyPage />} />
+        <Route path="/terms" element={<TermsOfServicePage />} />
+      </Route>
 
       {/* Main layout with navbar */}
       <Route element={<MainLayout />}>

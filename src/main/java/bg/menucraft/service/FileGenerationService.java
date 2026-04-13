@@ -24,6 +24,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
@@ -53,7 +54,8 @@ public class FileGenerationService {
     private static final Map<String, String> FIELD_PREFIX_TO_TYPE = Map.of(
             "salad", "SALAD",
             "soup", "SOUP",
-            "meal", "MAIN_COURSE"
+            "meal", "MAIN_COURSE",
+            "dessert", "DESSERT"
     );
 
     private final TemplateRepository templateRepository;
@@ -106,23 +108,28 @@ public class FileGenerationService {
      */
     @SneakyThrows
     private MenuResponse buildMenu(MenuGenerationRequest request, byte[] templateData) {
-        ClassPathResource fontResource = new ClassPathResource("fonts/arialbd.ttf");
-        if (!fontResource.exists()) {
-            fontResource = new ClassPathResource("fonts/arial.ttf");
-        }
-
         try (InputStream pdfIs = new ByteArrayInputStream(templateData);
              PDDocument document = Loader.loadPDF(new RandomAccessReadBuffer(pdfIs));
-             InputStream fontIs = fontResource.getInputStream();
              ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
 
-            PDType0Font font = PDType0Font.load(document, fontIs, false);
+            PDFont font = extractTemplateFont(document);
+            if (font == null) {
+                ClassPathResource fontResource = new ClassPathResource("fonts/arialbd.ttf");
+                if (!fontResource.exists()) {
+                    fontResource = new ClassPathResource("fonts/arial.ttf");
+                }
+                try (InputStream fontIs = fontResource.getInputStream()) {
+                    font = PDType0Font.load(document, fontIs, false);
+                }
+            }
+            log.info("Using font: {}", font.getName());
 
             // 1. Build items map by section type
             Map<String, List<MealDto>> itemsMap = new LinkedHashMap<>();
             itemsMap.put("SALAD", request.getSalads() != null ? request.getSalads() : List.of());
             itemsMap.put("SOUP", request.getSoups() != null ? request.getSoups() : List.of());
             itemsMap.put("MAIN_COURSE", request.getMainCourses() != null ? request.getMainCourses() : List.of());
+            itemsMap.put("DESSERT", request.getDesserts() != null ? request.getDesserts() : List.of());
 
             // 2. Get page dimensions
             PDPage page = document.getPage(0);
@@ -141,11 +148,14 @@ public class FileGenerationService {
                 log.info("No AcroForm found — using auto-computed section regions");
             }
 
-            // 4. Calculate layout via AI (with fallback to even distribution)
-            MenuLayoutResponse layout = menuLayoutService.calculateLayout(
-                    pageWidth, pageHeight, regions, itemsMap);
+            // 4. Render template preview for AI vision context
+            String templatePreview = renderTemplatePreviewBase64(templateData);
 
-            // 5. Draw menu items at calculated positions
+            // 5. Calculate layout via AI (with fallback to even distribution)
+            MenuLayoutResponse layout = menuLayoutService.calculateLayout(
+                    pageWidth, pageHeight, regions, itemsMap, templatePreview);
+
+            // 6. Draw menu items at calculated positions
             drawMenu(document, page, font, layout, regions);
 
             document.save(baos);
@@ -288,7 +298,7 @@ public class FileGenerationService {
      * Draws menu items onto the PDF page at AI-calculated Y positions,
      * using nameX/priceX from the extracted section regions.
      */
-    private void drawMenu(PDDocument document, PDPage page, PDType0Font font,
+    private void drawMenu(PDDocument document, PDPage page, PDFont font,
                           MenuLayoutResponse layout, Map<String, SectionRegion> regions) throws IOException {
         try (PDPageContentStream cs = new PDPageContentStream(
                 document, page, PDPageContentStream.AppendMode.APPEND, true, true)) {
@@ -327,6 +337,55 @@ public class FileGenerationService {
                     cs.endText();
                 }
             }
+        }
+    }
+
+    /**
+     * Attempts to extract a usable embedded font from the template's first page.
+     * Returns null if no suitable font is found.
+     */
+    private PDFont extractTemplateFont(PDDocument document) {
+        try {
+            PDPage page = document.getPage(0);
+            var resources = page.getResources();
+            if (resources == null) return null;
+
+            for (COSName fontName : resources.getFontNames()) {
+                PDFont candidate = resources.getFont(fontName);
+                if (candidate != null && candidate.getName() != null) {
+                    // Verify the font can encode basic Latin and Cyrillic by testing a sample
+                    try {
+                        candidate.getStringWidth("Test Тест 0.00 €");
+                        log.info("Extracted template font: {}", candidate.getName());
+                        return candidate;
+                    } catch (Exception e) {
+                        log.debug("Font {} cannot encode required glyphs, skipping", candidate.getName());
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log.debug("Font extraction failed: {}", e.getMessage());
+        }
+        return null;
+    }
+
+    /**
+     * Renders the first page of the template PDF to a low-res PNG and returns it as base64.
+     * Used to give the AI vision context about the template design.
+     */
+    @SneakyThrows
+    private String renderTemplatePreviewBase64(byte[] templateData) {
+        try (InputStream is = new ByteArrayInputStream(templateData);
+             PDDocument doc = Loader.loadPDF(new RandomAccessReadBuffer(is));
+             ByteArrayOutputStream imgOut = new ByteArrayOutputStream()) {
+
+            PDFRenderer renderer = new PDFRenderer(doc);
+            BufferedImage image = renderer.renderImageWithDPI(0, 72);
+            ImageIO.write(image, "png", imgOut);
+            return Base64.getEncoder().encodeToString(imgOut.toByteArray());
+        } catch (Exception e) {
+            log.warn("Failed to render template preview for AI: {}", e.getMessage());
+            return null;
         }
     }
 

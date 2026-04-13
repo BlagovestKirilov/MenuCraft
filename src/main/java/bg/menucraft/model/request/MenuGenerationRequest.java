@@ -4,7 +4,6 @@ import bg.menucraft.constant.ValidationConstants;
 import bg.menucraft.model.dto.MealDto;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,20 +19,21 @@ public class MenuGenerationRequest {
     @NotBlank(message = ValidationConstants.TEMPLATE_NAME_EMPTY)
     private String templateName;
 
-    @NotNull(message = ValidationConstants.SALADS_REQUIRED)
-    @Size(min = 1, max = 20, message = ValidationConstants.SALADS_SIZE)
+    @Size(max = 20, message = ValidationConstants.SALADS_SIZE)
     @Valid
     private List<MealDto> salads;
 
-    @NotNull(message = ValidationConstants.SOUPS_REQUIRED)
-    @Size(min = 1, max = 20, message = ValidationConstants.SOUPS_SIZE)
+    @Size(max = 20, message = ValidationConstants.SOUPS_SIZE)
     @Valid
     private List<MealDto> soups;
 
-    @NotNull(message = ValidationConstants.MAIN_COURSES_REQUIRED)
-    @Size(min = 1, max = 30, message = ValidationConstants.MAIN_COURSES_SIZE)
+    @Size(max = 30, message = ValidationConstants.MAIN_COURSES_SIZE)
     @Valid
     private List<MealDto> mainCourses;
+
+    @Size(max = 20, message = ValidationConstants.DESSERTS_SIZE)
+    @Valid
+    private List<MealDto> desserts;
 
     @NotBlank(message = ValidationConstants.VENUE_NAME_EMPTY)
     @Size(min = ValidationConstants.VENUE_NAME_MIN, max = ValidationConstants.VENUE_NAME_MAX,

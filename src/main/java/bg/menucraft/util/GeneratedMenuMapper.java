@@ -52,6 +52,15 @@ public interface GeneratedMenuMapper {
             );
         }
 
+        if (request.getDesserts() != null) {
+            meals.addAll(
+                    request.getDesserts()
+                            .stream()
+                            .map(dto -> toMeal(dto, MealEnum.DESSERT))
+                            .toList()
+            );
+        }
+
         return meals;
     }
 

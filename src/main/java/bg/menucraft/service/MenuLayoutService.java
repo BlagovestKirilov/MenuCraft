@@ -32,6 +32,9 @@ public class MenuLayoutService {
     private static final String SYSTEM_PROMPT = """
             You are a precise restaurant menu layout engine. Your task is to calculate optimal \
             text positions for menu items within predefined section regions on a PDF template.
+            If a template image is provided, use it to understand the design and place text \
+            in regions that complement the template's visual layout — avoid overlapping decorative \
+            elements, headers, or borders visible in the image.
 
             COORDINATE SYSTEM:
             - Units are PDF points (1 point = 1/72 inch)
@@ -51,14 +54,16 @@ public class MenuLayoutService {
             1. Reserve space for the title at the top of each section before distributing items
             2. Distribute items evenly in the remaining space below the title
             3. Add equal padding at the top and bottom of each section (at least 5pt from the edges)
-            4. Choose a single fontSize per section based on item count and available vertical space:
+            4. Use a SINGLE GLOBAL fontSize for ALL sections — every section must share the same fontSize.
+               Choose based on the section with the most items and available space:
                - 1-2 items: 14-16pt
                - 3-4 items: 12-14pt
                - 5-6 items: 10-12pt
                - 7+ items: 8-10pt
                - Never exceed 16pt, never go below 8pt
-            5. Ensure the gap between consecutive items is at least (fontSize + 4)pt
-            6. If items cannot fit with minimum fontSize 8pt, use 8pt and pack them tightly
+            5. Use the SAME vertical gap between consecutive items in ALL sections
+            6. Ensure the gap between consecutive items is at least (fontSize + 4)pt
+            7. If items cannot fit with minimum fontSize 8pt, use 8pt and pack them tightly
 
             TEXT FORMATTING:
             1. Capitalize the first letter of each word in item names
@@ -98,13 +103,16 @@ public class MenuLayoutService {
     /**
      * Calls the OpenAI API to calculate optimal layout positions for menu items.
      * Falls back to simple even distribution if the API call fails.
+     *
+     * @param templateImageBase64 optional base64-encoded PNG of the template page (for vision context)
      */
     public MenuLayoutResponse calculateLayout(float pageWidth, float pageHeight,
                                               Map<String, SectionRegion> regions,
-                                              Map<String, List<MealDto>> itemsMap) {
+                                              Map<String, List<MealDto>> itemsMap,
+                                              String templateImageBase64) {
         try {
             String userPrompt = buildUserPrompt(pageWidth, pageHeight, regions, itemsMap);
-            String aiResponse = callOpenAi(userPrompt);
+            String aiResponse = callOpenAi(userPrompt, templateImageBase64);
             MenuLayoutResponse response = objectMapper.readValue(aiResponse, MenuLayoutResponse.class);
             log.info("AI layout calculated successfully for {} section(s)", response.sections().size());
             return response;
@@ -138,12 +146,22 @@ public class MenuLayoutService {
         return sb.toString();
     }
 
-    private String callOpenAi(String userPrompt) {
+    private String callOpenAi(String userPrompt, String templateImageBase64) {
+        List<Map<String, Object>> userContent = new ArrayList<>();
+        userContent.add(Map.of("type", "text", "text", userPrompt));
+
+        if (templateImageBase64 != null && !templateImageBase64.isBlank()) {
+            userContent.add(Map.of(
+                    "type", "image_url",
+                    "image_url", Map.of("url", "data:image/png;base64," + templateImageBase64, "detail", "low")
+            ));
+        }
+
         Map<String, Object> requestBody = Map.of(
                 "model", properties.model(),
                 "messages", List.of(
                         Map.of("role", "system", "content", SYSTEM_PROMPT),
-                        Map.of("role", "user", "content", userPrompt)
+                        Map.of("role", "user", "content", userContent)
                 ),
                 "response_format", Map.of("type", "json_object"),
                 "temperature", 0.1
@@ -170,6 +188,14 @@ public class MenuLayoutService {
      */
     private MenuLayoutResponse fallbackLayout(Map<String, SectionRegion> regions,
                                               Map<String, List<MealDto>> itemsMap) {
+        // Determine a single global fontSize based on the largest section
+        int maxItems = itemsMap.values().stream()
+                .filter(l -> l != null && !l.isEmpty())
+                .mapToInt(List::size)
+                .max().orElse(1);
+        float fontSize = maxItems <= 2 ? 15 : maxItems <= 4 ? 13 : maxItems <= 6 ? 11 : 9;
+        float titleFontSize = fontSize + 4;
+
         List<SectionLayout> sections = new ArrayList<>();
 
         for (var entry : regions.entrySet()) {
@@ -179,14 +205,9 @@ public class MenuLayoutService {
             if (meals.isEmpty()) continue;
 
             int count = meals.size();
-            float fontSize = count <= 2 ? 15 : count <= 4 ? 13 : count <= 6 ? 11 : 9;
-            float availableHeight = r.topY() - r.bottomY();
-            float padding = Math.max(5, (availableHeight - count * (fontSize + 4)) / 2);
-            float startY = r.topY() - padding - fontSize;
-            float step = count > 1 ? (availableHeight - 2 * padding - fontSize) / (count - 1) : 0;
+            float padding = 5;
 
             String title = SECTION_TITLES_BG.getOrDefault(type, type);
-            float titleFontSize = fontSize + 4;
             float titleY = r.topY() - padding - titleFontSize;
             float itemsStartY = titleY - titleFontSize - 8;
 

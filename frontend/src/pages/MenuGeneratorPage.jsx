@@ -63,6 +63,16 @@ function MealListBuilder({ label, meals, onChange, maxCount, t }) {
   );
 }
 
+function formatMenuFilename() {
+  const now = new Date();
+  const dd = String(now.getDate()).padStart(2, '0');
+  const mm = String(now.getMonth() + 1).padStart(2, '0');
+  const yyyy = now.getFullYear();
+  const hh = String(now.getHours()).padStart(2, '0');
+  const min = String(now.getMinutes()).padStart(2, '0');
+  return `menu_${dd}.${mm}.${yyyy}_${hh}:${min}.pdf`;
+}
+
 export default function MenuGeneratorPage() {
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
@@ -73,14 +83,20 @@ export default function MenuGeneratorPage() {
   const maxSalads = parseInt(searchParams.get('salads'), 10) || 0;
   const maxSoups = parseInt(searchParams.get('soups'), 10) || 0;
   const maxMainCourses = parseInt(searchParams.get('mainCourses'), 10) || 0;
+  const maxDesserts = parseInt(searchParams.get('desserts'), 10) || 0;
 
-  const hasLimits = maxSalads > 0 || maxSoups > 0 || maxMainCourses > 0;
+  const hasSalads = maxSalads > 0;
+  const hasSoups = maxSoups > 0;
+  const hasMainCourses = maxMainCourses > 0;
+  const hasDesserts = maxDesserts > 0;
+  const hasLimits = hasSalads || hasSoups || hasMainCourses || hasDesserts;
 
   const [venueName, setVenueName] = useState(initialVenue);
   const [templateName, setTemplateName] = useState(initialTemplate);
   const [salads, setSalads] = useState([{ name: '', price: '' }]);
   const [soups, setSoups] = useState([{ name: '', price: '' }]);
   const [mainCourses, setMainCourses] = useState([{ name: '', price: '' }]);
+  const [desserts, setDesserts] = useState([{ name: '', price: '' }]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -88,7 +104,6 @@ export default function MenuGeneratorPage() {
   // Preview modal state
   const [previewPdf, setPreviewPdf] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
-  const [menuFilename, setMenuFilename] = useState('menu-filled.pdf');
   const [menuContentType, setMenuContentType] = useState('application/pdf');
 
   // Facebook connections from the venue
@@ -123,6 +138,13 @@ export default function MenuGeneratorPage() {
     loadConnections();
   }, [initialVenue]);
 
+  // Prevent background scroll when any overlay/modal is open
+  useEffect(() => {
+    const hasOverlay = loading || !!error || !!previewPdf;
+    document.body.style.overflow = hasOverlay ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [loading, error, previewPdf]);
+
   const buildLabel = (baseKey, max) => {
     if (max > 0) return `${t(baseKey)} (1–${max}) *`;
     return `${t(baseKey)} *`;
@@ -136,17 +158,22 @@ export default function MenuGeneratorPage() {
     const filledSalads = salads.filter((m) => m.name);
     const filledSoups = soups.filter((m) => m.name);
     const filledMainCourses = mainCourses.filter((m) => m.name);
+    const filledDesserts = desserts.filter((m) => m.name);
 
-    if (maxSalads > 0 && filledSalads.length > maxSalads) {
+    if (hasSalads && filledSalads.length > maxSalads) {
       setError(t('menuGenerator.limitError', { section: t('menuGenerator.saladsLabel'), max: maxSalads }));
       return;
     }
-    if (maxSoups > 0 && filledSoups.length > maxSoups) {
+    if (hasSoups && filledSoups.length > maxSoups) {
       setError(t('menuGenerator.limitError', { section: t('menuGenerator.soupsLabel'), max: maxSoups }));
       return;
     }
-    if (maxMainCourses > 0 && filledMainCourses.length > maxMainCourses) {
+    if (hasMainCourses && filledMainCourses.length > maxMainCourses) {
       setError(t('menuGenerator.limitError', { section: t('menuGenerator.mainCoursesLabel'), max: maxMainCourses }));
+      return;
+    }
+    if (hasDesserts && filledDesserts.length > maxDesserts) {
+      setError(t('menuGenerator.limitError', { section: t('menuGenerator.dessertsLabel'), max: maxDesserts }));
       return;
     }
 
@@ -155,14 +182,14 @@ export default function MenuGeneratorPage() {
       const payload = {
         templateName,
         venueName,
-        salads: filledSalads,
-        soups: filledSoups,
-        mainCourses: filledMainCourses,
+        salads: hasSalads ? filledSalads : [],
+        soups: hasSoups ? filledSoups : [],
+        mainCourses: hasMainCourses ? filledMainCourses : [],
+        desserts: hasDesserts ? filledDesserts : [],
       };
       const res = await generateMenu(payload);
       setPreviewPdf(res.data);
       setPreviewImage(res.previewImage || null);
-      setMenuFilename(res.filename || 'menu-filled.pdf');
       setMenuContentType(res.contentType || 'application/pdf');
       setSuccess(t('menuGenerator.success'));
     } catch (err) {
@@ -174,7 +201,7 @@ export default function MenuGeneratorPage() {
 
   const handleDownload = () => {
     if (previewPdf) {
-      downloadBase64(previewPdf, menuContentType, menuFilename);
+      downloadBase64(previewPdf, menuContentType, formatMenuFilename());
     }
   };
 
@@ -223,8 +250,30 @@ export default function MenuGeneratorPage() {
         <p>{t('menuGenerator.subtitle')}</p>
       </div>
 
+      {/* ── Full-screen loading overlay ── */}
+      {loading && (
+        <div className="generation-overlay">
+          <div className="generation-overlay-content">
+            <div className="spinner" style={{ width: 48, height: 48, borderWidth: 4 }} />
+            <p>{t('menuGenerator.generating')}</p>
+          </div>
+        </div>
+      )}
+
+      {/* ── Error popup modal ── */}
+      {error && (
+        <div className="modal-overlay" onClick={() => setError('')}>
+          <div className="confirm-modal" onClick={(e) => e.stopPropagation()}>
+            <h3 style={{ color: 'var(--color-danger)' }}>{t('menuGenerator.errorTitle')}</h3>
+            <p style={{ whiteSpace: 'pre-wrap' }}>{error}</p>
+            <button className="btn btn-primary" onClick={() => setError('')}>
+              {t('common.close')}
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="card" style={{ maxWidth: 720 }}>
-        <ErrorAlert message={error} onClose={() => setError('')} />
         <SuccessAlert message={success} onClose={() => setSuccess('')} />
 
         {hasLimits && (
@@ -233,6 +282,7 @@ export default function MenuGeneratorPage() {
               salads: maxSalads || '—',
               soups: maxSoups || '—',
               mainCourses: maxMainCourses || '—',
+              desserts: maxDesserts || '—',
             })}
           </div>
         )}
@@ -258,27 +308,42 @@ export default function MenuGeneratorPage() {
             readOnly
           />
 
-          <MealListBuilder
-            label={buildLabel('menuGenerator.saladsLabel', maxSalads)}
-            meals={salads}
-            onChange={setSalads}
-            maxCount={maxSalads || undefined}
-            t={t}
-          />
-          <MealListBuilder
-            label={buildLabel('menuGenerator.soupsLabel', maxSoups)}
-            meals={soups}
-            onChange={setSoups}
-            maxCount={maxSoups || undefined}
-            t={t}
-          />
-          <MealListBuilder
-            label={buildLabel('menuGenerator.mainCoursesLabel', maxMainCourses)}
-            meals={mainCourses}
-            onChange={setMainCourses}
-            maxCount={maxMainCourses || undefined}
-            t={t}
-          />
+          {hasSalads && (
+            <MealListBuilder
+              label={buildLabel('menuGenerator.saladsLabel', maxSalads)}
+              meals={salads}
+              onChange={setSalads}
+              maxCount={maxSalads}
+              t={t}
+            />
+          )}
+          {hasSoups && (
+            <MealListBuilder
+              label={buildLabel('menuGenerator.soupsLabel', maxSoups)}
+              meals={soups}
+              onChange={setSoups}
+              maxCount={maxSoups}
+              t={t}
+            />
+          )}
+          {hasMainCourses && (
+            <MealListBuilder
+              label={buildLabel('menuGenerator.mainCoursesLabel', maxMainCourses)}
+              meals={mainCourses}
+              onChange={setMainCourses}
+              maxCount={maxMainCourses}
+              t={t}
+            />
+          )}
+          {hasDesserts && (
+            <MealListBuilder
+              label={buildLabel('menuGenerator.dessertsLabel', maxDesserts)}
+              meals={desserts}
+              onChange={setDesserts}
+              maxCount={maxDesserts}
+              t={t}
+            />
+          )}
 
           <button type="submit" className="btn btn-primary btn-lg btn-block mt-2" disabled={loading}>
             {loading ? t('menuGenerator.submitting') : t('menuGenerator.submit')}

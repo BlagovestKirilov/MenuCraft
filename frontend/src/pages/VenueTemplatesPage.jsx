@@ -7,6 +7,15 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import { getTemplatesByVenue, getVenues } from '../api/venueApi';
 import { getErrorMessage } from '../utils/helpers';
 
+const SECTION_TYPE_LABELS = {
+  SALAD: 'adminTemplate.sectionSalad',
+  SOUP: 'adminTemplate.sectionSoup',
+  MAIN_COURSE: 'adminTemplate.sectionMainCourse',
+  DESSERT: 'adminTemplate.sectionDessert',
+};
+
+const SECTION_ORDER = ['SALAD', 'SOUP', 'MAIN_COURSE', 'DESSERT'];
+
 export default function VenueTemplatesPage() {
   const { t } = useTranslation();
   const { isAdmin } = useAuth();
@@ -80,6 +89,7 @@ export default function VenueTemplatesPage() {
       if (key === 'salad') sections.salads = s.slotCount;
       else if (key === 'soup') sections.soups = s.slotCount;
       else if (key === 'main_course') sections.mainCourses = s.slotCount;
+      else if (key === 'dessert') sections.desserts = s.slotCount;
     });
 
     const params = new URLSearchParams();
@@ -88,6 +98,7 @@ export default function VenueTemplatesPage() {
     if (sections.salads) params.set('salads', sections.salads);
     if (sections.soups) params.set('soups', sections.soups);
     if (sections.mainCourses) params.set('mainCourses', sections.mainCourses);
+    if (sections.desserts) params.set('desserts', sections.desserts);
 
     navigate(`/menu/generate?${params.toString()}`);
   };
@@ -168,9 +179,12 @@ export default function VenueTemplatesPage() {
                       <td style={{ fontWeight: 600 }}>{tpl.name}</td>
                       <td>{tpl.description || '—'}</td>
                       <td>
-                        {tpl.sections?.map((s, j) => (
+                        {tpl.sections
+                          ?.slice()
+                          .sort((a, b) => (SECTION_ORDER.indexOf(a.type) - SECTION_ORDER.indexOf(b.type)))
+                          .map((s, j) => (
                           <span key={j} className="badge badge-success" style={{ marginRight: 4 }}>
-                            {s.type} ({s.slotCount})
+                            {t(SECTION_TYPE_LABELS[s.type] || s.type)} ({s.slotCount})
                           </span>
                         ))}
                       </td>

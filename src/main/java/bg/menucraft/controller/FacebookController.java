@@ -1,10 +1,13 @@
 package bg.menucraft.controller;
 
+import bg.menucraft.config.FacebookProperties;
 import bg.menucraft.model.request.FacebookPostRequest;
 import bg.menucraft.model.response.FacebookOAuthResponse;
 import bg.menucraft.model.response.FacebookPostResponse;
 import bg.menucraft.service.FacebookOAuthService;
 import bg.menucraft.service.FacebookPostingService;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -20,8 +23,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.security.MessageDigest;
+import java.util.Base64;
+import java.util.Map;
 import java.util.UUID;
 
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -43,6 +51,8 @@ public class FacebookController {
 
     private final FacebookOAuthService facebookOAuthService;
     private final FacebookPostingService facebookPostingService;
+    private final FacebookProperties facebookProperties;
+    private final ObjectMapper objectMapper;
 
     @Value("${app.frontend-url}")
     private String frontendUrl;
@@ -124,5 +134,59 @@ public class FacebookController {
     public ResponseEntity<Void> disconnect(@PathVariable UUID connectionId) {
         facebookOAuthService.disconnect(connectionId);
         return ResponseEntity.noContent().build();
+    }
+
+    // ───────────────────── Data Deletion Callback ─────────────────────
+
+    /**
+     * Facebook Data Deletion Request callback.
+     * Facebook sends a signed_request when a user requests deletion of their data.
+     * We verify the signature, log the request, and return a confirmation.
+     *
+     * @param signedRequest the signed_request parameter from Facebook
+     * @return JSON with url and confirmation_code
+     */
+    @PostMapping("/data-deletion")
+    public ResponseEntity<Map<String, Object>> dataDeletion(@RequestParam("signed_request") String signedRequest) {
+        try {
+            String[] parts = signedRequest.split("\\.", 2);
+            if (parts.length != 2) {
+                return ResponseEntity.badRequest().build();
+            }
+
+            String sig = parts[0];
+            String payload = parts[1];
+
+            // Verify HMAC-SHA256 signature
+            Mac mac = Mac.getInstance("HmacSHA256");
+            mac.init(new SecretKeySpec(facebookProperties.appSecret().getBytes(StandardCharsets.UTF_8), "HmacSHA256"));
+            byte[] expected = mac.doFinal(payload.getBytes(StandardCharsets.UTF_8));
+            byte[] actual = Base64.getUrlDecoder().decode(sig + "==");
+
+            if (!MessageDigest.isEqual(expected, actual)) {
+                log.warn("Facebook data-deletion: invalid signature");
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+
+            // Decode payload
+            String json = new String(Base64.getUrlDecoder().decode(payload + "=="), StandardCharsets.UTF_8);
+            JsonNode node = objectMapper.readTree(json);
+            String userId = node.path("user_id").asText("");
+
+            String confirmationCode = UUID.randomUUID().toString();
+            log.info("Facebook data-deletion request: userId={}, confirmationCode={}", userId, confirmationCode);
+
+            // Facebook connections are deleted when user disconnects.
+            // For a full deletion request, the user can contact support.
+            // Return confirmation per Facebook's requirements.
+            return ResponseEntity.ok(Map.of(
+                    "url", frontendUrl + "/privacy",
+                    "confirmation_code", confirmationCode
+            ));
+
+        } catch (Exception e) {
+            log.error("Facebook data-deletion callback failed", e);
+            return ResponseEntity.internalServerError().build();
+        }
     }
 }
