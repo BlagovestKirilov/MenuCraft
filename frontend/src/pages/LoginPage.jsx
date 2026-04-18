@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import useAuth from '../hooks/useAuth';
 import FormField from '../components/FormField';
@@ -66,6 +66,11 @@ export default function LoginPage() {
           </button>
         </form>
 
+      </div>
+      <div className="auth-footer">
+        <Link to="/privacy">{t('footer.privacy')}</Link>
+        <span className="footer-sep">·</span>
+        <Link to="/terms">{t('footer.terms')}</Link>
       </div>
     </div>
   );
