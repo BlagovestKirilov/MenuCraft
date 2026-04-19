@@ -912,6 +912,10 @@ tr.clickable-row:hover td {
   color: var(--color-primary);
 }
 
+.footer-links {
+  margin-top: 0.375rem;
+}
+
 .footer-sep {
   margin: 0 0.5rem;
 }

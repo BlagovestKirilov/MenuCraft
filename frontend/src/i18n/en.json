@@ -304,7 +304,7 @@
     "title": "Privacy Policy",
     "lastUpdated": "Last updated: April 2026",
     "introTitle": "Introduction",
-    "introText": "MenuCraft (\"we\", \"us\", \"our\") operates the menucraft.online website and service. This Privacy Policy explains what data we collect, how we use it, and how you can manage or delete your data.",
+    "introText": "MenuCraft, operated by Blagovest Kirilov (\"we\", \"us\", \"our\"), provides the menucraft.online website and service. This Privacy Policy explains what data we collect, how we use it, and how you can manage or delete your data.",
     "dataCollectedTitle": "Data We Collect",
     "dataCollected1": "Account information: email address and password (hashed) when you register.",
     "dataCollected2": "Venue information: venue names and descriptions you create.",
@@ -333,7 +333,7 @@
     "title": "Terms of Service",
     "lastUpdated": "Last updated: April 2026",
     "acceptanceTitle": "1. Acceptance of Terms",
-    "acceptanceText": "By accessing or using MenuCraft (menucraft.online), you agree to be bound by these Terms of Service. If you do not agree, do not use the service.",
+    "acceptanceText": "By accessing or using MenuCraft (menucraft.online), operated by Blagovest Kirilov, you agree to be bound by these Terms of Service. If you do not agree, do not use the service.",
     "serviceTitle": "2. Description of Service",
     "serviceText": "MenuCraft is a web application that allows restaurant owners and managers to create PDF menus from templates, manage venues, and optionally publish menus to connected Facebook Pages.",
     "accountsTitle": "3. User Accounts",
@@ -349,9 +349,10 @@
     "changesTitle": "8. Changes to Terms",
     "changesText": "We may update these Terms at any time. Continued use of the service after changes constitutes acceptance of the updated terms.",
     "contactTitle": "9. Contact",
-    "contactText": "For questions about these Terms, contact us at support@menucraft.online."
+    "contactText": "For questions about these Terms, contact Blagovest Kirilov at support@menucraft.online."
   },
   "footer": {
+    "copyright": "© 2026 Blagovest Kirilov — MenuCraft",
     "privacy": "Privacy Policy",
     "terms": "Terms of Service"
   }
