@@ -68,9 +68,12 @@ export default function LoginPage() {
 
       </div>
       <div className="auth-footer">
-        <Link to="/privacy">{t('footer.privacy')}</Link>
-        <span className="footer-sep">·</span>
-        <Link to="/terms">{t('footer.terms')}</Link>
+        <div>{t('footer.copyright')}</div>
+        <div className="footer-links">
+          <Link to="/privacy">{t('footer.privacy')}</Link>
+          <span className="footer-sep">·</span>
+          <Link to="/terms">{t('footer.terms')}</Link>
+        </div>
       </div>
     </div>
   );
